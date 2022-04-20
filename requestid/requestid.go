@@ -1,6 +1,7 @@
 package requestid
 
 import (
+	"github.com/donetkit/gin-contrib/uuid"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,7 +21,7 @@ type config struct {
 func New(opts ...Option) gin.HandlerFunc {
 	cfg := &config{
 		generator: func() string {
-			return "uuid"
+			return uuid.New()
 		},
 		headerKey: "X-Request-ID",
 	}
