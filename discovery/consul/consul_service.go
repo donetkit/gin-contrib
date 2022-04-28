@@ -1,34 +1,21 @@
-package discovery
+package consul
 
 import (
 	"fmt"
+	"github.com/donetkit/gin-contrib/discovery"
 	consulApi "github.com/hashicorp/consul/api"
 	"github.com/pkg/errors"
 	"time"
 )
 
-type ConsulClient struct {
+type Client struct {
 	client                *consulApi.Client
-	Options               *config
-	consulServiceRegistry *ConsulServiceRegistry
+	Options               *discovery.Config
+	consulServiceRegistry *ServiceConsul
 }
 
-type config struct {
-	Id                  string
-	ServiceName         string
-	ServiceRegisterAddr string
-	ServiceRegisterPort int
-	ServiceCheckAddr    string
-	ServiceCheckPort    int
-	Tags                []string
-	IntervalTime        int
-	DeregisterTime      int
-	TimeOut             int
-	CheckHTTP           string
-}
-
-func New(opts ...Option) (*ConsulClient, error) {
-	cfg := &config{
+func New(opts ...discovery.Option) (*Client, error) {
+	cfg := &discovery.Config{
 		Id:                  fmt.Sprintf("%d", time.Now().UnixNano()),
 		ServiceName:         "127.0.0.1:80",
 		ServiceRegisterAddr: "127.0.0.1",
@@ -43,27 +30,27 @@ func New(opts ...Option) (*ConsulClient, error) {
 	for _, opt := range opts {
 		opt(cfg)
 	}
-	consulClient := &ConsulClient{
+	consulClient := &Client{
 		Options: cfg,
 	}
 	return consulClient, nil
 }
 
-func (s *ConsulClient) ServiceRegister() error {
+func (s *Client) Register() error {
 	if s.Options.CheckHTTP == "" {
 		return s.serviceRegisterTCP()
 	}
 	return s.serviceRegisterHttp()
 }
 
-func (s *ConsulClient) ServiceDeregister() error {
+func (s *Client) Deregister() error {
 	if s.Options.CheckHTTP == "" {
 		return s.serviceDeregisterTCP()
 	}
 	return s.serviceDeregisterHttp()
 }
 
-func (s *ConsulClient) serviceRegisterTCP() error {
+func (s *Client) serviceRegisterTCP() error {
 
 	consulCli, err := consulApi.NewClient(&consulApi.Config{Address: fmt.Sprintf("%s:%d", s.Options.ServiceRegisterAddr, s.Options.ServiceRegisterPort)})
 	if err != nil {
@@ -94,7 +81,7 @@ func (s *ConsulClient) serviceRegisterTCP() error {
 	return nil
 }
 
-func (s *ConsulClient) serviceDeregisterTCP() error {
+func (s *Client) serviceDeregisterTCP() error {
 	err := s.client.Agent().ServiceDeregister(s.Options.Id)
 	if err != nil {
 		return errors.Wrapf(err, "deregister service error[key=%s]", s.Options.Id)
@@ -102,7 +89,7 @@ func (s *ConsulClient) serviceDeregisterTCP() error {
 	return nil
 }
 
-func (s *ConsulClient) serviceRegisterHttp() error {
+func (s *Client) serviceRegisterHttp() error {
 	registryClient, err := NewConsulServiceRegistryAddress(fmt.Sprintf("%s:%d", s.Options.ServiceRegisterAddr, s.Options.ServiceRegisterPort), "")
 	if err != nil {
 		return err
@@ -130,7 +117,7 @@ func (s *ConsulClient) serviceRegisterHttp() error {
 	return nil
 }
 
-func (s *ConsulClient) serviceDeregisterHttp() error {
+func (s *Client) serviceDeregisterHttp() error {
 	s.consulServiceRegistry.Deregister()
 	return nil
 }

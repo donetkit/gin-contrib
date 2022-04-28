@@ -1,4 +1,4 @@
-package discovery
+package consul
 
 import (
 	"errors"
@@ -8,13 +8,13 @@ import (
 	"github.com/hashicorp/consul/api"
 )
 
-type ConsulServiceRegistry struct {
+type ServiceConsul struct {
 	serviceInstances     map[string]map[string]ServiceInstance
 	client               api.Client
 	localServiceInstance ServiceInstance
 }
 
-func (c *ConsulServiceRegistry) Register(serviceInstance ServiceInstance) bool {
+func (c *ServiceConsul) Register(serviceInstance ServiceInstance) bool {
 	// 创建注册到consul的服务到
 	registration := new(api.AgentServiceRegistration)
 	registration.ID = serviceInstance.GetInstanceId()
@@ -49,7 +49,7 @@ func (c *ConsulServiceRegistry) Register(serviceInstance ServiceInstance) bool {
 }
 
 // deregister a service
-func (c *ConsulServiceRegistry) Deregister() {
+func (c *ServiceConsul) Deregister() {
 	if c.serviceInstances == nil {
 		return
 	}
@@ -66,7 +66,7 @@ func (c *ConsulServiceRegistry) Deregister() {
 }
 
 // new a consulServiceRegistry instance token is optional
-func NewConsulServiceRegistry(host string, port int, token string) (*ConsulServiceRegistry, error) {
+func NewConsulServiceRegistry(host string, port int, token string) (*ServiceConsul, error) {
 	if len(host) < 3 {
 		return nil, errors.New("check host")
 	}
@@ -80,11 +80,11 @@ func NewConsulServiceRegistry(host string, port int, token string) (*ConsulServi
 	if err != nil {
 		return nil, err
 	}
-	return &ConsulServiceRegistry{client: *client}, nil
+	return &ServiceConsul{client: *client}, nil
 }
 
 // new a consulServiceRegistry instance  token is optional
-func NewConsulServiceRegistryAddress(address string, token string) (*ConsulServiceRegistry, error) {
+func NewConsulServiceRegistryAddress(address string, token string) (*ServiceConsul, error) {
 	config := api.DefaultConfig()
 	config.Address = address
 	config.Token = token
@@ -92,5 +92,5 @@ func NewConsulServiceRegistryAddress(address string, token string) (*ConsulServi
 	if err != nil {
 		return nil, err
 	}
-	return &ConsulServiceRegistry{client: *client}, nil
+	return &ServiceConsul{client: *client}, nil
 }
