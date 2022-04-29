@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	ginZap "github.com/donetkit/gin-contrib/zap"
+	ginZap "github.com/donetkit/gin-contrib/middleware/zap"
 	"time"
 
 	"github.com/gin-gonic/gin"

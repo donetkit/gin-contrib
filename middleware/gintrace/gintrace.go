@@ -1,7 +1,8 @@
-package trace
+package gintrace
 
 import (
 	"fmt"
+	"github.com/donetkit/gin-contrib/trace"
 	"github.com/gin-gonic/gin"
 
 	"go.opentelemetry.io/otel"
@@ -31,7 +32,7 @@ func Middleware(service string, opts ...Option) gin.HandlerFunc {
 	}
 	tracer := cfg.TracerProvider.Tracer(
 		tracerName,
-		oteltrace.WithInstrumentationVersion(SemVersion()),
+		oteltrace.WithInstrumentationVersion(trace.SemVersion()),
 	)
 	if cfg.Propagators == nil {
 		cfg.Propagators = otel.GetTextMapPropagator()
@@ -86,7 +87,7 @@ func HTML(c *gin.Context, code int, name string, obj interface{}) {
 	if !ok {
 		tracer = otel.GetTracerProvider().Tracer(
 			tracerName,
-			oteltrace.WithInstrumentationVersion(SemVersion()),
+			oteltrace.WithInstrumentationVersion(trace.SemVersion()),
 		)
 	}
 	savedContext := c.Request.Context()

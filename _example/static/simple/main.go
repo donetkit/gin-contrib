@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/donetkit/gin-contrib/static"
+	"github.com/donetkit/gin-contrib/middleware/static"
 	"log"
 
 	"github.com/gin-gonic/gin"

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/base64"
 	"fmt"
-	"github.com/donetkit/gin-contrib/httpsign/validator"
+	validator2 "github.com/donetkit/gin-contrib/middleware/httpsign/validator"
 	"net/http"
 	"strings"
 
@@ -23,7 +23,7 @@ var defaultRequiredHeaders = []string{requestTarget, date, digest}
 // Authenticator is the gin authenticator middleware.
 type Authenticator struct {
 	secrets    Secrets
-	validators []validator.Validator
+	validators []validator2.Validator
 	headers    []string
 }
 
@@ -32,7 +32,7 @@ type Option func(*Authenticator)
 
 // WithValidator configures the Authenticator to use custom validator.
 // The default validators are time based and digest.
-func WithValidator(validators ...validator.Validator) Option {
+func WithValidator(validators ...validator2.Validator) Option {
 	return func(a *Authenticator) {
 		a.validators = validators
 	}
@@ -57,9 +57,9 @@ func NewAuthenticator(secretKeys Secrets, options ...Option) *Authenticator {
 	}
 
 	if a.validators == nil {
-		a.validators = []validator.Validator{
-			validator.NewDateValidator(),
-			validator.NewDigestValidator(),
+		a.validators = []validator2.Validator{
+			validator2.NewDateValidator(),
+			validator2.NewDigestValidator(),
 		}
 	}
 

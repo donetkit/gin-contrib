@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/donetkit/gin-contrib/jwt"
+	"github.com/donetkit/gin-contrib/middleware/jwt"
 	"log"
 	"net/http"
 	"os"

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/donetkit/gin-contrib/pprof"
+	"github.com/donetkit/gin-contrib/middleware/pprof"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

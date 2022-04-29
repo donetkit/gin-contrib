@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/donetkit/gin-contrib/secure"
+	"github.com/donetkit/gin-contrib/middleware/secure"
 	"log"
 
 	"github.com/gin-gonic/gin"

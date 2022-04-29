@@ -1,4 +1,4 @@
-package trace
+package gintrace
 
 import (
 	"go.opentelemetry.io/otel/propagation"

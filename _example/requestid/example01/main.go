@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/donetkit/gin-contrib/requestid"
+	"github.com/donetkit/gin-contrib/middleware/requestid"
 	"log"
 	"net/http"
 	"time"

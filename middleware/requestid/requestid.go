@@ -1,7 +1,7 @@
 package requestid
 
 import (
-	"github.com/donetkit/gin-contrib/uuid"
+	"github.com/donetkit/gin-contrib/utils/uuid"
 	"github.com/gin-gonic/gin"
 )
 

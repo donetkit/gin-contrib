@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/donetkit/gin-contrib/gzip"
+	"github.com/donetkit/gin-contrib/middleware/gzip"
 	"log"
 	"net/http"
 	"time"
