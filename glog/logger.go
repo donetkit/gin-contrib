@@ -2,7 +2,7 @@ package glog
 
 import (
 	"fmt"
-	"github.com/donetkit/gin-contrib/glog/console_colors"
+	"github.com/donetkit/gin-contrib/utils/console_colors"
 )
 
 type ILogger interface {
