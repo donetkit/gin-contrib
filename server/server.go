@@ -4,16 +4,23 @@ import (
 	"context"
 	"fmt"
 	"github.com/donetkit/gin-contrib/discovery"
+	"github.com/donetkit/gin-contrib/utils/console_colors"
+	"github.com/donetkit/gin-contrib/utils/files"
+	"github.com/donetkit/gin-contrib/utils/glog"
+	"github.com/donetkit/gin-contrib/utils/host"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 	"time"
 )
 
 type config struct {
+	logger         glog.ILogger
 	serviceName    string
 	host           string
 	port           int
@@ -26,7 +33,11 @@ type config struct {
 }
 
 type Server struct {
-	Options *config
+	options     *config
+	pId         int
+	environment string
+	version     string
+	server      string
 }
 
 type InitControllers func(r *gin.Engine)
@@ -34,38 +45,56 @@ type InitControllers func(r *gin.Engine)
 func New(opts ...Option) (*Server, error) {
 	var cfg = &config{
 		serviceName: "demo",
-		host:        "127.0.0.1",
+		host:        host.GetOutBoundIp(),
 		port:        80,
 	}
 	for _, opt := range opts {
 		opt(cfg)
 	}
-	return &Server{Options: cfg}, nil
+	server := &Server{
+		options:     cfg,
+		pId:         os.Getpid(),
+		version:     "V0.1",
+		environment: EnvName,
+		server:      "HTTP API",
+	}
+	if cfg.router != nil {
+		switch server.environment {
+		case Dev:
+			gin.SetMode(gin.DebugMode)
+		case Test:
+			gin.SetMode(gin.TestMode)
+		case Prod:
+			gin.SetMode(gin.ReleaseMode)
+		}
+	}
+	return server, nil
 }
 
 func (s *Server) Start() error {
-	addr := fmt.Sprintf("%s:%d", s.Options.host, s.Options.port)
-	s.Options.httpServer = http.Server{
+	addr := fmt.Sprintf("%s:%d", s.options.host, s.options.port)
+	s.options.httpServer = http.Server{
 		Addr:           addr,
-		Handler:        s.Options.router,
-		ReadTimeout:    s.Options.readTimeout,
-		WriteTimeout:   s.Options.writerTimeout,
-		MaxHeaderBytes: s.Options.maxHeaderBytes,
+		Handler:        s.options.router,
+		ReadTimeout:    s.options.readTimeout,
+		WriteTimeout:   s.options.writerTimeout,
+		MaxHeaderBytes: s.options.maxHeaderBytes,
 	}
 	go func() {
-		if err := s.Options.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := s.options.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			return
 		}
 	}()
 	s.register()
+	s.printLog()
 	return nil
 }
 
 func (s *Server) register() error {
-	if s.Options.consulClient == nil {
+	if s.options.consulClient == nil {
 		return nil
 	}
-	serverDiscovery, ok := s.Options.consulClient.(discovery.Discovery)
+	serverDiscovery, ok := s.options.consulClient.(discovery.Discovery)
 	if ok {
 		err := serverDiscovery.Register()
 		if err != nil {
@@ -77,10 +106,10 @@ func (s *Server) register() error {
 }
 
 func (s *Server) deregister() error {
-	if s.Options.consulClient == nil {
+	if s.options.consulClient == nil {
 		return nil
 	}
-	serverDiscovery, ok := s.Options.consulClient.(discovery.Discovery)
+	serverDiscovery, ok := s.options.consulClient.(discovery.Discovery)
 	if ok {
 		err := serverDiscovery.Deregister()
 		if err != nil {
@@ -98,7 +127,7 @@ func (s *Server) stop() error {
 		return errors.Wrap(err, "deregister http server error")
 	}
 
-	if err := s.Options.httpServer.Shutdown(ctx); err != nil {
+	if err := s.options.httpServer.Shutdown(ctx); err != nil {
 		return errors.Wrap(err, "shutdown http server error")
 	}
 
@@ -117,4 +146,46 @@ func (s *Server) AwaitSignal() {
 		}
 		os.Exit(0)
 	}
+}
+
+func (s *Server) printLog() {
+	if s.options.logger == nil {
+		log.Println(console_colors.Green("Starting server..."))
+		log.Println(console_colors.Green(fmt.Sprintf("Welcome to %s, starting application ...", s.options.serviceName)))
+		log.Println(fmt.Sprintf("framework version :  %s", console_colors.Blue(s.version)))
+		log.Println(fmt.Sprintf("server & protocol        :  %s", console_colors.Green(s.server)))
+		log.Println(fmt.Sprintf("machine host ip          :  %s", console_colors.Blue(s.options.host)))
+		log.Println(fmt.Sprintf("listening on port        :  %s", console_colors.Blue(fmt.Sprintf("%d", s.options.port))))
+		log.Println(fmt.Sprintf("application running pid  :  %s", console_colors.Blue(strconv.Itoa(s.pId))))
+		log.Println(fmt.Sprintf("application name         :  %s", console_colors.Blue(s.options.serviceName)))
+		log.Println(fmt.Sprintf("application exec path    :  %s", console_colors.Yellow(files.GetCurrentDirectory())))
+		log.Println(fmt.Sprintf("application environment  :  %s", console_colors.Yellow(console_colors.Blue(s.environment))))
+		log.Println(fmt.Sprintf("running in %s mode , change (Dev,Test,Prod) mode by HostBuilder.SetEnvironment .", console_colors.Red(s.environment)))
+		log.Println(console_colors.Green("Server is Started."))
+		return
+	}
+	s.options.logger.Info(console_colors.Green("Starting server..."))
+	s.options.logger.Info(console_colors.Green(fmt.Sprintf("Welcome to %s, starting application ...", s.options.serviceName)))
+	s.options.logger.Info("framework version :  %s", console_colors.Blue(s.version))
+	s.options.logger.Info("server & protocol        :  %s", console_colors.Green(s.server))
+	s.options.logger.Info("machine host ip          :  %s", console_colors.Blue(s.options.host))
+	s.options.logger.Info("listening on port        :  %s", console_colors.Blue(fmt.Sprintf("%d", s.options.port)))
+	s.options.logger.Info("application running pid  :  %s", console_colors.Blue(strconv.Itoa(s.pId)))
+	s.options.logger.Info("application name         :  %s", console_colors.Blue(s.options.serviceName))
+	s.options.logger.Info("application exec path    :  %s", console_colors.Yellow(files.GetCurrentDirectory()))
+	s.options.logger.Info("application environment  :  %s", console_colors.Yellow(console_colors.Blue(s.environment)))
+	s.options.logger.Info("running in %s mode , change (Dev,Test,Prod) mode by Environment .", console_colors.Red(s.environment))
+	s.options.logger.Info(console_colors.Green("Server is Started."))
+}
+
+func (s *Server) IsDevelopment() bool {
+	return s.environment == Dev
+}
+
+func (s *Server) IsTest() bool {
+	return s.environment == Test
+}
+
+func (s *Server) IsProduction() bool {
+	return s.environment == Prod
 }

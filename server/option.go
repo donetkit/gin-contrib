@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/donetkit/gin-contrib/discovery/consul"
+	"github.com/donetkit/gin-contrib/utils/glog"
 	"github.com/gin-gonic/gin"
 	"time"
 )
@@ -69,5 +70,12 @@ func WithWriterTimeout(writerTimeout time.Duration) Option {
 func WithMaxHeaderBytes(maxHeaderBytes int) Option {
 	return func(cfg *config) {
 		cfg.maxHeaderBytes = maxHeaderBytes
+	}
+}
+
+// WithLogger set logger function
+func WithLogger(logger glog.ILogger) Option {
+	return func(cfg *config) {
+		cfg.logger = logger
 	}
 }
