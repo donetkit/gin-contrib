@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/donetkit/gin-contrib/gzip"
 	"log"
 	"net/http"
 	"time"
@@ -11,7 +12,7 @@ import (
 
 func main() {
 	r := gin.Default()
-	//r.Use(gzip.Gzip(gzip.DefaultCompression))
+	r.Use(gzip.Gzip(gzip.DefaultCompression))
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong "+fmt.Sprint(time.Now().Unix()))
 	})
