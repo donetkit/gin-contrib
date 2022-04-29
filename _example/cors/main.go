@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/donetkit/gin-contrib/cors"
+	"github.com/donetkit/gin-contrib/middleware/cors"
 	"time"
 
 	"github.com/gin-gonic/gin"
