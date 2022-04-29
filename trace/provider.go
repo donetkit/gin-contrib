@@ -13,7 +13,6 @@ func NewTracerProvider(service, host, development string, port int) (*trace.Trac
 	exp, err := jaeger.New(jaeger.WithAgentEndpoint(jaeger.WithAgentHost(host), jaeger.WithAgentPort(fmt.Sprintf("%d", port))))
 	//exp, err := jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(url)))
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	tracerProvider := trace.NewTracerProvider(
