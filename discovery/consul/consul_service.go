@@ -9,9 +9,8 @@ import (
 )
 
 type Client struct {
-	client                *consulApi.Client
-	options               *discovery.Config
-	consulServiceRegistry *ServiceConsul
+	client  *consulApi.Client
+	options *discovery.Config
 }
 
 func New(opts ...discovery.Option) (*Client, error) {
@@ -25,44 +24,31 @@ func New(opts ...discovery.Option) (*Client, error) {
 		Tags:                []string{"v0.0.1"},
 		IntervalTime:        5,
 		DeregisterTime:      15,
-		TimeOut:             5,
+		TimeOut:             3,
 	}
 	for _, opt := range opts {
 		opt(cfg)
 	}
+	consulCli, err := consulApi.NewClient(&consulApi.Config{Address: fmt.Sprintf("%s:%d", cfg.ServiceRegisterAddr, cfg.ServiceRegisterPort)})
+	if err != nil {
+		return nil, errors.Wrap(err, "create consul client error")
+	}
 	consulClient := &Client{
 		options: cfg,
+		client:  consulCli,
 	}
 	return consulClient, nil
 }
 
 func (s *Client) Register() error {
-	if s.options.CheckHTTP == "" {
-		return s.serviceRegisterTCP()
-	}
-	return s.serviceRegisterHttp()
-}
-
-func (s *Client) Deregister() error {
-	if s.options.CheckHTTP == "" {
-		return s.serviceDeregisterTCP()
-	}
-	return s.serviceDeregisterHttp()
-}
-
-func (s *Client) serviceRegisterTCP() error {
-
-	consulCli, err := consulApi.NewClient(&consulApi.Config{Address: fmt.Sprintf("%s:%d", s.options.ServiceRegisterAddr, s.options.ServiceRegisterPort)})
-	if err != nil {
-		return fmt.Errorf("create consul client error")
-	}
-	s.client = consulCli
-
-	addr := fmt.Sprintf("%s:%d", s.options.ServiceCheckAddr, s.options.ServiceCheckPort)
 	check := &consulApi.AgentServiceCheck{
-		Interval:                       fmt.Sprintf("%ds", s.options.IntervalTime),
-		DeregisterCriticalServiceAfter: fmt.Sprintf("%ds", s.options.DeregisterTime),
-		TCP:                            addr,
+		Timeout:                        fmt.Sprintf("%ds", s.options.TimeOut),        // 超时时间
+		Interval:                       fmt.Sprintf("%ds", s.options.IntervalTime),   // 健康检查间隔
+		DeregisterCriticalServiceAfter: fmt.Sprintf("%ds", s.options.DeregisterTime), //check失败后30秒删除本服务，注销时间，相当于过期时间
+		HTTP:                           s.options.CheckHTTP,
+	}
+	if s.options.CheckHTTP == "" {
+		check.TCP = fmt.Sprintf("%s:%d", s.options.ServiceCheckAddr, s.options.ServiceCheckPort)
 	}
 	svcReg := &consulApi.AgentServiceRegistration{
 		ID:                s.options.Id,
@@ -74,50 +60,17 @@ func (s *Client) serviceRegisterTCP() error {
 		Check:             check,
 		Checks:            nil,
 	}
-	err = s.client.Agent().ServiceRegister(svcReg)
+	err := s.client.Agent().ServiceRegister(svcReg)
 	if err != nil {
 		return errors.Wrap(err, "register service error")
 	}
 	return nil
 }
 
-func (s *Client) serviceDeregisterTCP() error {
+func (s *Client) Deregister() error {
 	err := s.client.Agent().ServiceDeregister(s.options.Id)
 	if err != nil {
 		return errors.Wrapf(err, "deregister service error[key=%s]", s.options.Id)
 	}
-	return nil
-}
-
-func (s *Client) serviceRegisterHttp() error {
-	registryClient, err := NewConsulServiceRegistryAddress(fmt.Sprintf("%s:%d", s.options.ServiceRegisterAddr, s.options.ServiceRegisterPort), "")
-	if err != nil {
-		return err
-	}
-	s.consulServiceRegistry = registryClient
-	serviceInstance := DefaultServiceInstance{
-		InstanceId:     s.options.Id,
-		ServiceName:    s.options.ServiceName,
-		Host:           s.options.ServiceCheckAddr,
-		Port:           s.options.ServiceCheckPort,
-		Metadata:       s.options.Tags,
-		Timeout:        s.options.TimeOut,
-		Interval:       s.options.IntervalTime,
-		DeregisterTime: s.options.DeregisterTime,
-		CheckHTTP:      s.options.CheckHTTP,
-	}
-	serviceInstanceInfo, err := NewDefaultServiceInstance(&serviceInstance)
-	if err != nil {
-		return err
-	}
-	if s.consulServiceRegistry.Register(serviceInstanceInfo) {
-		return errors.New("register fail")
-	}
-	fmt.Println(s.options.CheckHTTP)
-	return nil
-}
-
-func (s *Client) serviceDeregisterHttp() error {
-	s.consulServiceRegistry.Deregister()
 	return nil
 }
