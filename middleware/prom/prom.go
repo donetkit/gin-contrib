@@ -156,8 +156,8 @@ func New(opts ...Option) gin.HandlerFunc {
 	}
 }
 
-// PromHandler wrappers the standard http.Handler to gin.HandlerFunc
-func PromHandler(handler http.Handler) gin.HandlerFunc {
+// promHandler wrappers the standard http.Handler to gin.HandlerFunc
+func promHandler(handler http.Handler) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		handler.ServeHTTP(c.Writer, c.Request)
 	}

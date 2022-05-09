@@ -64,7 +64,7 @@ func WithEndpointLabelMappingFn(endpointLabelMappingFn RequestLabelMappingFn) Op
 func WithPromHandler(router *gin.Engine) Option {
 	return func(cfg *config) {
 		if router != nil {
-			router.GET(cfg.handlerUrl, PromHandler(promhttp.Handler()))
+			router.GET(cfg.handlerUrl, promHandler(promhttp.Handler()))
 		}
 	}
 }
