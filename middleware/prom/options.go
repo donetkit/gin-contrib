@@ -9,9 +9,9 @@ import (
 type config struct {
 	handlerUrl             string
 	namespace              string
-	excludeRegexStatus     string
-	excludeRegexEndpoint   string
-	excludeRegexMethod     string
+	excludeRegexStatus     []string
+	excludeRegexEndpoint   []string
+	excludeRegexMethod     []string
 	endpointLabelMappingFn RequestLabelMappingFn
 }
 
@@ -32,22 +32,22 @@ func WithHandlerUrl(handlerUrl string) Option {
 	}
 }
 
-// WithExcludeRegexStatus set excludeRegexStatus function
-func WithExcludeRegexStatus(excludeRegexStatus string) Option {
+// WithExcludeRegexStatus set excludeRegexStatus function regexp
+func WithExcludeRegexStatus(excludeRegexStatus []string) Option {
 	return func(cfg *config) {
 		cfg.excludeRegexStatus = excludeRegexStatus
 	}
 }
 
-// WithExcludeRegexEndpoint set excludeRegexEndpoint function
-func WithExcludeRegexEndpoint(excludeRegexEndpoint string) Option {
+// WithExcludeRegexEndpoint set excludeRegexEndpoint function regexp
+func WithExcludeRegexEndpoint(excludeRegexEndpoint []string) Option {
 	return func(cfg *config) {
 		cfg.excludeRegexEndpoint = excludeRegexEndpoint
 	}
 }
 
-// WithExcludeRegexMethod set excludeRegexMethod function
-func WithExcludeRegexMethod(excludeRegexMethod string) Option {
+// WithExcludeRegexMethod set excludeRegexMethod function regexp
+func WithExcludeRegexMethod(excludeRegexMethod []string) Option {
 	return func(cfg *config) {
 		cfg.excludeRegexMethod = excludeRegexMethod
 	}

@@ -104,15 +104,23 @@ type RequestLabelMappingFn func(c *gin.Context) string
 
 // checkLabel returns the match result of labels.
 // Return true if regex-pattern compiles failed.
-func (c *config) checkLabel(label, pattern string) bool {
-	if pattern == "" {
+func (c *config) checkLabel(label string, patterns []string) bool {
+	if len(patterns) <= 0 {
 		return true
 	}
-	matched, err := regexp.MatchString(pattern, label)
-	if err != nil {
-		return true
+	for _, pattern := range patterns {
+		if pattern == "" {
+			return true
+		}
+		matched, err := regexp.MatchString(pattern, label)
+		if err != nil {
+			return true
+		}
+		if matched {
+			return false
+		}
 	}
-	return !matched
+	return true
 }
 
 // New returns a gin.HandlerFunc for exporting some Web metrics
@@ -137,9 +145,7 @@ func New(opts ...Option) gin.HandlerFunc {
 
 		lvs := []string{status, endpoint, method}
 
-		isOk := cfg.checkLabel(status, cfg.excludeRegexStatus) &&
-			cfg.checkLabel(endpoint, cfg.excludeRegexEndpoint) &&
-			cfg.checkLabel(method, cfg.excludeRegexMethod)
+		isOk := cfg.checkLabel(status, cfg.excludeRegexStatus) && cfg.checkLabel(endpoint, cfg.excludeRegexEndpoint) && cfg.checkLabel(method, cfg.excludeRegexMethod)
 
 		if !isOk {
 			return
