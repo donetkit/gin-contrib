@@ -46,7 +46,7 @@ func WithServiceCheckPort(serviceCheckPort int) Option {
 }
 
 // WithTags set tags function
-func WithTags(tags []string) Option {
+func WithTags(tags ...string) Option {
 	return func(cfg *Config) {
 		cfg.Tags = tags
 	}
