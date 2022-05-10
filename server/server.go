@@ -20,16 +20,16 @@ import (
 )
 
 type config struct {
-	logger         glog.ILogger
-	serviceName    string
-	host           string
-	port           int
-	router         *gin.Engine
-	httpServer     http.Server
-	consulClient   interface{}
-	readTimeout    time.Duration
-	writerTimeout  time.Duration
-	maxHeaderBytes int
+	logger          glog.ILogger
+	serviceName     string
+	host            string
+	port            int
+	router          *gin.Engine
+	httpServer      http.Server
+	clientDiscovery interface{}
+	readTimeout     time.Duration
+	writerTimeout   time.Duration
+	maxHeaderBytes  int
 }
 
 type Server struct {
@@ -39,8 +39,6 @@ type Server struct {
 	version     string
 	server      string
 }
-
-type InitControllers func(r *gin.Engine)
 
 func New(opts ...Option) (*Server, error) {
 	var cfg = &config{
@@ -71,7 +69,7 @@ func New(opts ...Option) (*Server, error) {
 	return server, nil
 }
 
-func (s *Server) Start() error {
+func (s *Server) Start() {
 	addr := fmt.Sprintf("%s:%d", s.options.host, s.options.port)
 	s.options.httpServer = http.Server{
 		Addr:           addr,
@@ -85,31 +83,30 @@ func (s *Server) Start() error {
 			return
 		}
 	}()
-	s.register()
+	s.registerDiscovery()
 	s.printLog()
-	return nil
+	s.awaitSignal()
 }
 
-func (s *Server) register() error {
-	if s.options.consulClient == nil {
+func (s *Server) registerDiscovery() *Server {
+	if s.options.clientDiscovery == nil {
 		return nil
 	}
-	serverDiscovery, ok := s.options.consulClient.(discovery.Discovery)
+	serverDiscovery, ok := s.options.clientDiscovery.(discovery.Discovery)
 	if ok {
 		err := serverDiscovery.Register()
 		if err != nil {
-			return err
+			s.options.logger.Error(err.Error())
 		}
 	}
-
-	return nil
+	return s
 }
 
 func (s *Server) deregister() error {
-	if s.options.consulClient == nil {
+	if s.options.clientDiscovery == nil {
 		return nil
 	}
-	serverDiscovery, ok := s.options.consulClient.(discovery.Discovery)
+	serverDiscovery, ok := s.options.clientDiscovery.(discovery.Discovery)
 	if ok {
 		err := serverDiscovery.Deregister()
 		if err != nil {
@@ -122,27 +119,24 @@ func (s *Server) deregister() error {
 func (s *Server) stop() error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5) // 平滑关闭,等待5秒钟处理
 	defer cancel()
-
 	if err := s.deregister(); err != nil {
 		return errors.Wrap(err, "deregister http server error")
 	}
-
 	if err := s.options.httpServer.Shutdown(ctx); err != nil {
 		return errors.Wrap(err, "shutdown http server error")
 	}
-
 	return nil
 }
 
-func (s *Server) AwaitSignal() {
+func (s *Server) awaitSignal() {
 	c := make(chan os.Signal, 1)
 	signal.Reset(syscall.SIGTERM, syscall.SIGINT)
 	signal.Notify(c, syscall.SIGTERM, syscall.SIGINT)
 	select {
 	case c := <-c:
-		fmt.Println("receive a signal", "signal", c.String())
+		s.options.logger.Info("receive a signal, " + "signal: " + c.String())
 		if err := s.stop(); err != nil {
-			fmt.Println("stop http server error", err)
+			s.options.logger.Error("stop http server error %s", err.Error())
 		}
 		os.Exit(0)
 	}
@@ -150,6 +144,7 @@ func (s *Server) AwaitSignal() {
 
 func (s *Server) printLog() {
 	if s.options.logger == nil {
+		log.Printf("======================================================================")
 		log.Println(console_colors.Green("Starting server..."))
 		log.Println(console_colors.Green(fmt.Sprintf("Welcome to %s, starting application ...", s.options.serviceName)))
 		log.Println(fmt.Sprintf("framework version :  %s", console_colors.Blue(s.version)))
@@ -162,8 +157,10 @@ func (s *Server) printLog() {
 		log.Println(fmt.Sprintf("application environment  :  %s", console_colors.Yellow(console_colors.Blue(s.environment))))
 		log.Println(fmt.Sprintf("running in %s mode , change (Dev,Test,Prod) mode by HostBuilder.SetEnvironment .", console_colors.Red(s.environment)))
 		log.Println(console_colors.Green("Server is Started."))
+		log.Printf("======================================================================")
 		return
 	}
+	s.options.logger.Info("======================================================================")
 	s.options.logger.Info(console_colors.Green("Starting server..."))
 	s.options.logger.Info(console_colors.Green(fmt.Sprintf("Welcome to %s, starting application ...", s.options.serviceName)))
 	s.options.logger.Info("framework version :  %s", console_colors.Blue(s.version))
@@ -176,6 +173,7 @@ func (s *Server) printLog() {
 	s.options.logger.Info("application environment  :  %s", console_colors.Yellow(console_colors.Blue(s.environment)))
 	s.options.logger.Info("running in %s mode , change (Dev,Test,Prod) mode by Environment .", console_colors.Red(s.environment))
 	s.options.logger.Info(console_colors.Green("Server is Started."))
+	s.options.logger.Info("======================================================================")
 }
 
 func (s *Server) IsDevelopment() bool {

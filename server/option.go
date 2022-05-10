@@ -48,7 +48,7 @@ func WithRouter(router *gin.Engine) Option {
 // WithConsulClient set consulClient function
 func WithConsulClient(consulClient *consul.Client) Option {
 	return func(cfg *config) {
-		cfg.consulClient = consulClient
+		cfg.clientDiscovery = consulClient
 	}
 }
 
