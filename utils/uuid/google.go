@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func GoogleId() string {
+func GoogleUUId() string {
 	u, _ := uuid.NewRandom()
 	return strings.ReplaceAll(u.String(), "-", "")
 }
