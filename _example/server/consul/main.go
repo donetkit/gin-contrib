@@ -21,5 +21,4 @@ func main() {
 		panic(err)
 	}
 	appServe.Start()
-	appServe.AwaitSignal()
 }

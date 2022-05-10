@@ -79,3 +79,17 @@ func WithLogger(logger glog.ILogger) Option {
 		cfg.logger = logger
 	}
 }
+
+// WithVersion set version function
+func WithVersion(version string) Option {
+	return func(cfg *config) {
+		cfg.version = version
+	}
+}
+
+// WithProtocol set protocol function
+func WithProtocol(protocol string) Option {
+	return func(cfg *config) {
+		cfg.protocol = protocol
+	}
+}
