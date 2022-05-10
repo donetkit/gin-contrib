@@ -10,6 +10,17 @@ import (
 	"strings"
 )
 
+var CurrentPath = getCurrentPath()
+
+// getCurrentPath 获取当前文件的路径，直接返回string
+func getCurrentPath() string {
+	cwd, e := os.Getwd()
+	if e != nil {
+		panic(e)
+	}
+	return cwd
+}
+
 func FileExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 	if err == nil {
@@ -156,10 +167,34 @@ func PathExists(path string) (bool, error) {
 	return false, err
 }
 
-func CreateDir(string2 string) error {
-	err := os.MkdirAll(string2, 0755)
+func CreateDir(filePath string) error {
+	err := os.MkdirAll(filePath, 0755)
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+// IsNotExistMkDir create a directory if it does not exist
+func IsNotExistMkDir(src string) error {
+	notExist, err := PathExists(src)
+	if err != nil {
+		return err
+	}
+	if !notExist {
+		if err = MkDir(src); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// MkDir create a directory
+func MkDir(src string) error {
+	err := os.MkdirAll(src, os.FileMode(0755))
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
