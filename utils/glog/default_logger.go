@@ -48,7 +48,7 @@ func (log *DefaultLogger) SetDateFormat(format string) {
 }
 
 func (log *DefaultLogger) log(level LogLevel, format string, a ...interface{}) {
-	if level <= log.config.logLevel {
+	if level < log.config.logLevel {
 		return
 	}
 	message := format

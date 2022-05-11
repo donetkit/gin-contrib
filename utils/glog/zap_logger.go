@@ -80,6 +80,9 @@ func (log *ZapLogger) SetDateFormat(format string) {
 }
 
 func (log *ZapLogger) log(level LogLevel, format string, a ...interface{}) {
+	if level < log.config.logLevel {
+		return
+	}
 	message := format
 	message = fmt.Sprintf(format, a...)
 
