@@ -1,5 +1,10 @@
 package discovery
 
+import (
+	"fmt"
+	"github.com/gin-gonic/gin"
+)
+
 // Option for queue system
 type Option func(*Config)
 
@@ -73,9 +78,15 @@ func WithTimeOut(timeOut int) Option {
 	}
 }
 
-// WithCheckHTTP set checkHTTP function
-func WithCheckHTTP(checkHTTP string) Option {
+// WithCheckHTTP set checkHttp function
+func WithCheckHTTP(router *gin.Engine, checkHttp ...string) Option {
 	return func(cfg *Config) {
-		cfg.CheckHTTP = checkHTTP
+		var checkHttpUrl = "/health"
+		if len(checkHttp) > 0 {
+			checkHttpUrl = checkHttp[0]
+		}
+		cfg.CheckHTTP = checkHttpUrl
+		cfg.CheckHTTP = fmt.Sprintf("http://%s:%d%s", cfg.ServiceCheckAddr, cfg.ServiceCheckPort, checkHttpUrl)
+		router.GET(checkHttpUrl, func(c *gin.Context) { c.String(200, "Healthy") })
 	}
 }

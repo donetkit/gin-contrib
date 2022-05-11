@@ -3,9 +3,10 @@ package consul
 import (
 	"fmt"
 	"github.com/donetkit/gin-contrib/discovery"
+	"github.com/donetkit/gin-contrib/utils/host"
+	"github.com/donetkit/gin-contrib/utils/uuid"
 	consulApi "github.com/hashicorp/consul/api"
 	"github.com/pkg/errors"
-	"time"
 )
 
 type Client struct {
@@ -15,11 +16,11 @@ type Client struct {
 
 func New(opts ...discovery.Option) (*Client, error) {
 	cfg := &discovery.Config{
-		Id:                  fmt.Sprintf("%d", time.Now().UnixNano()),
-		ServiceName:         "127.0.0.1:80",
+		Id:                  uuid.NewUUID(),
+		ServiceName:         "Service",
 		ServiceRegisterAddr: "127.0.0.1",
 		ServiceRegisterPort: 8500,
-		ServiceCheckAddr:    "127.0.0.1",
+		ServiceCheckAddr:    host.GetOutBoundIp(),
 		ServiceCheckPort:    80,
 		Tags:                []string{"v0.0.1"},
 		IntervalTime:        5,
@@ -38,4 +39,9 @@ func New(opts ...discovery.Option) (*Client, error) {
 		client:  consulCli,
 	}
 	return consulClient, nil
+}
+
+// SetTags set tags []string
+func (s *Client) SetTags(tags ...string) {
+	s.options.Tags = tags
 }
