@@ -81,7 +81,7 @@ func WithTimeOut(timeOut int) Option {
 // WithCheckHTTP set checkHttp function
 func WithCheckHTTP(router *gin.Engine, checkHttp ...string) Option {
 	return func(cfg *Config) {
-		var checkHttpUrl = "/health"
+		var checkHttpUrl = "/health/" + cfg.Id
 		if len(checkHttp) > 0 {
 			checkHttpUrl = checkHttp[0]
 		}
