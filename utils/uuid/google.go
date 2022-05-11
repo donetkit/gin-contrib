@@ -2,10 +2,12 @@ package uuid
 
 import (
 	"github.com/google/uuid"
-	"strings"
 )
 
-func GoogleUUId() string {
-	u, _ := uuid.NewRandom()
-	return strings.ReplaceAll(u.String(), "-", "")
+func GenerateGoogleUUID() (string, error) {
+	u, err := uuid.NewRandom()
+	if err != nil {
+		return "", err
+	}
+	return u.String(), nil
 }

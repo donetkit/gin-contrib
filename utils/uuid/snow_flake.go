@@ -15,6 +15,6 @@ func init() {
 	}
 }
 
-func SnowFlakeId() int64 {
+func GenerateSnowFlakeId() int64 {
 	return snowFlakeNode.Generate().Int64()
 }
