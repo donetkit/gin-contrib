@@ -46,6 +46,7 @@ func (c *config) prometheusOpts() {
 			Namespace: c.namespace,
 			Name:      "http_request_duration_seconds",
 			Help:      "HTTP request latencies in seconds.",
+			Buckets:   c.duration,
 		}, labels,
 	)
 
@@ -127,6 +128,7 @@ func (c *config) checkLabel(label string, patterns []string) bool {
 func New(opts ...Option) gin.HandlerFunc {
 	cfg := &config{
 		namespace:  "service",
+		duration:   []float64{0.1, 0.3, 1.2, 5},
 		handlerUrl: "/metrics",
 		endpointLabelMappingFn: func(c *gin.Context) string {
 			return c.Request.URL.Path

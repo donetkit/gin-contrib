@@ -69,6 +69,18 @@ func New(opts ...Option) (*Server, error) {
 	return server, nil
 }
 
+func (s *Server) IsDevelopment() bool {
+	return s.options.environment == Dev
+}
+
+func (s *Server) IsTest() bool {
+	return s.options.environment == Test
+}
+
+func (s *Server) IsProduction() bool {
+	return s.options.environment == Prod
+}
+
 func (s *Server) Start() {
 	addr := fmt.Sprintf("%s:%d", s.options.host, s.options.port)
 	s.options.httpServer = http.Server{
@@ -86,6 +98,20 @@ func (s *Server) Start() {
 	s.registerDiscovery()
 	s.printLog()
 	s.awaitSignal()
+}
+
+func (s *Server) Stop() error {
+	s.options.logger.Info("Server is stopping")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5) // 平滑关闭,等待5秒钟处理
+	defer cancel()
+	if err := s.deregister(); err != nil {
+		return errors.Wrap(err, "deregister http server error")
+	}
+	if err := s.options.httpServer.Shutdown(ctx); err != nil {
+		return errors.Wrap(err, "shutdown http server error")
+	}
+	s.options.logger.Info("Server is stopped.")
+	return nil
 }
 
 func (s *Server) registerDiscovery() *Server {
@@ -116,18 +142,6 @@ func (s *Server) deregister() error {
 	return nil
 }
 
-func (s *Server) stop() error {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5) // 平滑关闭,等待5秒钟处理
-	defer cancel()
-	if err := s.deregister(); err != nil {
-		return errors.Wrap(err, "deregister http server error")
-	}
-	if err := s.options.httpServer.Shutdown(ctx); err != nil {
-		return errors.Wrap(err, "shutdown http server error")
-	}
-	return nil
-}
-
 func (s *Server) awaitSignal() {
 	c := make(chan os.Signal, 1)
 	signal.Reset(syscall.SIGTERM, syscall.SIGINT)
@@ -135,7 +149,7 @@ func (s *Server) awaitSignal() {
 	select {
 	case c := <-c:
 		s.options.logger.Info("receive a signal, " + "signal: " + c.String())
-		if err := s.stop(); err != nil {
+		if err := s.Stop(); err != nil {
 			s.options.logger.Error("stop http server error %s", err.Error())
 		}
 		os.Exit(0)
@@ -157,16 +171,4 @@ func (s *Server) printLog() {
 	s.options.logger.Info("running in %s mode , change (Dev,Test,Prod) mode by Environment .", console_colors.Red(s.options.environment))
 	s.options.logger.Info(console_colors.Green("Server is Started."))
 	s.options.logger.Info("======================================================================")
-}
-
-func (s *Server) IsDevelopment() bool {
-	return s.options.environment == Dev
-}
-
-func (s *Server) IsTest() bool {
-	return s.options.environment == Test
-}
-
-func (s *Server) IsProduction() bool {
-	return s.options.environment == Prod
 }

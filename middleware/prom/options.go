@@ -9,6 +9,7 @@ import (
 type config struct {
 	handlerUrl             string
 	namespace              string
+	duration               []float64
 	excludeRegexStatus     []string
 	excludeRegexEndpoint   []string
 	excludeRegexMethod     []string
@@ -66,5 +67,12 @@ func WithPromHandler(router *gin.Engine) Option {
 		if router != nil {
 			router.GET(cfg.handlerUrl, promHandler(promhttp.Handler()))
 		}
+	}
+}
+
+// WithDuration set duration function
+func WithDuration(duration []float64) Option {
+	return func(cfg *config) {
+		cfg.duration = duration
 	}
 }

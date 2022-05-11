@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/donetkit/gin-contrib/discovery"
 	"github.com/donetkit/gin-contrib/discovery/consul"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -11,7 +12,7 @@ import (
 
 func main() {
 	r := gin.New()
-	consulClient, _ := consul.New()
+	consulClient, _ := consul.New(discovery.WithServiceRegisterAddr("192.168.5.110"))
 	// Example ping request.
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong "+fmt.Sprint(time.Now().Unix()))
