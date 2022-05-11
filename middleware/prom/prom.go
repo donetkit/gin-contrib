@@ -24,7 +24,7 @@ var (
 )
 
 // init registers the prometheus metrics
-func (c *config) prometheusOpts() {
+func (c *config) registerPrometheusOpts() {
 	uptime = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Namespace: c.namespace,
@@ -137,6 +137,7 @@ func New(opts ...Option) gin.HandlerFunc {
 	for _, opt := range opts {
 		opt(cfg)
 	}
+	cfg.registerPrometheusOpts()
 	return func(c *gin.Context) {
 		start := time.Now()
 		c.Next()
