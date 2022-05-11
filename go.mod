@@ -1,6 +1,6 @@
 module github.com/donetkit/gin-contrib
 
-go 1.17
+go 1.18
 
 require (
 	github.com/appleboy/gofight/v2 v2.1.2
