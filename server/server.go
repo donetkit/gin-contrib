@@ -160,7 +160,7 @@ func (s *Server) printLog() {
 	s.options.logger.Info("======================================================================")
 	s.options.logger.Info(console_colors.Green("Starting server..."))
 	s.options.logger.Info(console_colors.Green(fmt.Sprintf("Welcome to %s, starting application ...", s.options.serviceName)))
-	s.options.logger.Info("framework version :  %s", console_colors.Blue(s.options.version))
+	s.options.logger.Info("framework version        :  %s", console_colors.Blue(s.options.version))
 	s.options.logger.Info("server & protocol        :  %s", console_colors.Green(s.options.protocol))
 	s.options.logger.Info("machine host ip          :  %s", console_colors.Blue(s.options.host))
 	s.options.logger.Info("listening on port        :  %s", console_colors.Blue(fmt.Sprintf("%d", s.options.port)))
