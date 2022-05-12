@@ -16,9 +16,9 @@ func main() {
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong "+fmt.Sprint(time.Now().Unix()))
 	})
-	appServe, err := server.New(server.WithRouter(r), server.WithConsulClient(consulClient))
+	appServe, err := server.New(server.WithRouter(r))
 	if err != nil {
 		panic(err)
 	}
-	appServe.Run()
+	appServe.AddDiscovery(consulClient).Run()
 }

@@ -1,7 +1,6 @@
 package server
 
 import (
-	"github.com/donetkit/gin-contrib/discovery/consul"
 	"github.com/donetkit/gin-contrib/utils/glog"
 	"github.com/gin-gonic/gin"
 	"time"
@@ -44,13 +43,6 @@ func WithRouter(router *gin.Engine) Option {
 //		cfg.httpServer = httpServer
 //	}
 //}
-
-// WithConsulClient set consulClient function
-func WithConsulClient(consulClient *consul.Client) Option {
-	return func(cfg *config) {
-		cfg.clientDiscovery = consulClient
-	}
-}
 
 // WithReadTimeout set readTimeout function
 func WithReadTimeout(readTimeout time.Duration) Option {
