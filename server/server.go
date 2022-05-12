@@ -41,14 +41,17 @@ type Server struct {
 
 func New(opts ...Option) (*Server, error) {
 	var cfg = &config{
-		serviceName: "demo",
-		host:        host.GetOutBoundIp(),
-		port:        80,
-		logger:      glog.NewDefaultLogger(),
-		version:     "V0.1",
-		protocol:    "HTTP API",
-		pId:         os.Getpid(),
-		environment: EnvName,
+		serviceName:    "demo",
+		host:           host.GetOutBoundIp(),
+		port:           80,
+		logger:         glog.NewDefaultLogger(),
+		version:        "V0.1",
+		protocol:       "HTTP API",
+		pId:            os.Getpid(),
+		environment:    EnvName,
+		writerTimeout:  time.Second * 120,
+		readTimeout:    time.Second * 120,
+		maxHeaderBytes: 1 << 20,
 	}
 	for _, opt := range opts {
 		opt(cfg)
