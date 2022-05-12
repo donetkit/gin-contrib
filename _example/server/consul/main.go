@@ -20,5 +20,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	appServe.Start()
+	appServe.Run()
 }

@@ -25,7 +25,7 @@ type config struct {
 	port            int
 	router          *gin.Engine
 	httpServer      http.Server
-	clientDiscovery interface{}
+	clientDiscovery discovery.Discovery
 	readTimeout     time.Duration
 	writerTimeout   time.Duration
 	maxHeaderBytes  int
@@ -81,25 +81,6 @@ func (s *Server) IsProduction() bool {
 	return s.options.environment == Prod
 }
 
-func (s *Server) Start() {
-	addr := fmt.Sprintf("%s:%d", s.options.host, s.options.port)
-	s.options.httpServer = http.Server{
-		Addr:           addr,
-		Handler:        s.options.router,
-		ReadTimeout:    s.options.readTimeout,
-		WriteTimeout:   s.options.writerTimeout,
-		MaxHeaderBytes: s.options.maxHeaderBytes,
-	}
-	go func() {
-		if err := s.options.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			return
-		}
-	}()
-	s.registerDiscovery()
-	s.printLog()
-	s.awaitSignal()
-}
-
 func (s *Server) Stop() error {
 	s.options.logger.Info("Server is stopping")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5) // 平滑关闭,等待5秒钟处理
@@ -118,12 +99,9 @@ func (s *Server) registerDiscovery() *Server {
 	if s.options.clientDiscovery == nil {
 		return nil
 	}
-	serverDiscovery, ok := s.options.clientDiscovery.(discovery.Discovery)
-	if ok {
-		err := serverDiscovery.Register()
-		if err != nil {
-			s.options.logger.Error(err.Error())
-		}
+	err := s.options.clientDiscovery.Register()
+	if err != nil {
+		s.options.logger.Error(err.Error())
 	}
 	return s
 }
@@ -132,12 +110,9 @@ func (s *Server) deregister() error {
 	if s.options.clientDiscovery == nil {
 		return nil
 	}
-	serverDiscovery, ok := s.options.clientDiscovery.(discovery.Discovery)
-	if ok {
-		err := serverDiscovery.Deregister()
-		if err != nil {
-			return err
-		}
+	err := s.options.clientDiscovery.Deregister()
+	if err != nil {
+		return err
 	}
 	return nil
 }
@@ -171,4 +146,31 @@ func (s *Server) printLog() {
 	s.options.logger.Info("running in %s mode , change (Dev,Test,Prod) mode by Environment .", console_colors.Red(s.options.environment))
 	s.options.logger.Info(console_colors.Green("Server is Started."))
 	s.options.logger.Info("======================================================================")
+}
+
+func (s *Server) AddDiscovery(client discovery.Discovery) *Server {
+	if client == nil {
+		return nil
+	}
+	s.options.clientDiscovery = client
+	return s
+}
+
+func (s *Server) Run() {
+	addr := fmt.Sprintf("%s:%d", s.options.host, s.options.port)
+	s.options.httpServer = http.Server{
+		Addr:           addr,
+		Handler:        s.options.router,
+		ReadTimeout:    s.options.readTimeout,
+		WriteTimeout:   s.options.writerTimeout,
+		MaxHeaderBytes: s.options.maxHeaderBytes,
+	}
+	go func() {
+		if err := s.options.httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			return
+		}
+	}()
+	s.registerDiscovery()
+	s.printLog()
+	s.awaitSignal()
 }
