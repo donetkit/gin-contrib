@@ -1,12 +1,13 @@
 package timeout
 
 import (
+	"github.com/donetkit/gin-contrib/utils/buffer"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
-var bufPool *BufferPool
+var bufPool *buffer.BufferPool
 
 const (
 	defaultTimeout = 5 * time.Second
@@ -34,7 +35,7 @@ func New(opts ...Option) gin.HandlerFunc {
 		return t.handler
 	}
 
-	bufPool = &BufferPool{}
+	bufPool = &buffer.BufferPool{}
 
 	return func(c *gin.Context) {
 		finish := make(chan struct{}, 1)

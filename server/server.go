@@ -3,10 +3,10 @@ package server
 import (
 	"context"
 	"fmt"
+	"github.com/donetkit/gin-contrib-log/console_colors"
+	"github.com/donetkit/gin-contrib-log/glog"
 	"github.com/donetkit/gin-contrib/discovery"
-	"github.com/donetkit/gin-contrib/utils/console_colors"
 	"github.com/donetkit/gin-contrib/utils/files"
-	"github.com/donetkit/gin-contrib/utils/glog"
 	"github.com/donetkit/gin-contrib/utils/host"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"

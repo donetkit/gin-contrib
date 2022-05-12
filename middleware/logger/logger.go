@@ -2,7 +2,7 @@ package logger
 
 import (
 	"fmt"
-	"github.com/donetkit/gin-contrib/utils/glog"
+	"github.com/donetkit/gin-contrib-log/glog"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"

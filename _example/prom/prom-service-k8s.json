@@ -3,39 +3,68 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "editable": true,
-  "gnetId": null,
-  "graphTooltip": 1,
-  "id": 3,
-  "iteration": 1577457684434,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 22,
+  "iteration": 1652333746464,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": true,
-      "colors": [
-        "#5794F2",
-        "#5794F2",
-        "#5794F2"
-      ],
-      "datasource": "$datasource",
-      "format": "dateTimeAsIso",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
+      "datasource": {
+        "uid": "$datasource"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "dateTimeAsUS"
+        },
+        "overrides": []
       },
       "gridPos": {
         "h": 6,
@@ -44,71 +73,48 @@
         "y": 0
       },
       "id": 14,
-      "interval": null,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
       "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "options": {},
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
-          "expr": "max((time() - service_uptime{job=~\"$job\"}) * 1000)",
+          "expr": "(time() - service_uptime{job=~\"$job\"}) * 1000",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
         }
       ],
-      "thresholds": "",
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Service last updated",
-      "type": "singlestat",
-      "valueFontSize": "100%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
+      "type": "stat"
     },
     {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
-      "decimals": null,
+      "datasource": {
+        "uid": "$datasource"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -117,6 +123,7 @@
         "x": 6,
         "y": 0
       },
+      "hiddenSeries": false,
       "id": 2,
       "legend": {
         "alignAsTable": true,
@@ -134,9 +141,10 @@
       "links": [],
       "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -146,17 +154,16 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(rate(service_http_request_count_total{job=~\"$job\", exported_endpoint=~\"$endpoint\", method=~\"$method\", status=~\"$status\"}[$interval])) by (exported_endpoint)",
+          "expr": "rate(service_http_request_count_total{job=~\"$job\", endpoint=~\"$endpoint\", method=~\"$method\", status=~\"$status\"}[$interval])",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{ exported_endpoint }}",
+          "legendFormat": "{{ endpoint }}-{{method}}-{{status}}",
           "refId": "A"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Requests QPS",
       "tooltip": {
         "shared": true,
@@ -165,52 +172,62 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": true,
-      "colors": [
-        "#299c46",
-        "#73BF69",
-        "#d44a3a"
-      ],
-      "datasource": "$datasource",
-      "format": "s",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
+      "datasource": {
+        "uid": "$datasource"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
       },
       "gridPos": {
         "h": 6,
@@ -219,71 +236,48 @@
         "y": 6
       },
       "id": 12,
-      "interval": null,
       "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
       "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "options": {},
-      "pluginVersion": "6.2.1",
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": false
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
       },
-      "tableColumn": "",
+      "pluginVersion": "8.5.2",
       "targets": [
         {
-          "expr": "max(service_uptime{job=~\"$job\"})",
+          "expr": "service_uptime{job=~\"$job\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
         }
       ],
-      "thresholds": "",
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Service Uptime",
-      "type": "singlestat",
-      "valueFontSize": "110%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
+      "type": "stat"
     },
     {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
+      "datasource": {
+        "uid": "$datasource"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -292,6 +286,7 @@
         "x": 0,
         "y": 12
       },
+      "hiddenSeries": false,
       "id": 4,
       "legend": {
         "alignAsTable": true,
@@ -308,9 +303,10 @@
       "links": [],
       "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -320,17 +316,16 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(rate(service_http_request_size_bytes_sum{job=~\"$job\", exported_endpoint=~\"$endpoint\", method=~\"$method\", status=~\"$status\"}[$interval])) by (exported_endpoint)\n/\nsum(rate(service_http_request_size_bytes_count{job=~\"$job\", exported_endpoint=~\"$endpoint\", method=~\"$method\", status=~\"$status\"}[$interval])) by (exported_endpoint)",
+          "expr": "rate(service_http_request_size_bytes_sum{job=~\"$job\", endpoint=~\"$endpoint\", method=~\"$method\", status=~\"$status\"}[$interval])\n/\nrate(service_http_request_size_bytes_count{job=~\"$job\", endpoint=~\"$endpoint\", method=~\"$method\", status=~\"$status\"}[$interval])",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{ exported_endpoint }}",
+          "legendFormat": "{{ endpoint }}-{{method}}-{{status}}",
           "refId": "A"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Request size(bytes) per second",
       "tooltip": {
         "shared": true,
@@ -339,33 +334,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "format": "short",
-          "label": null,
+          "format": "bytes",
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -373,7 +359,15 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
+      "datasource": {
+        "uid": "$datasource"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -382,6 +376,7 @@
         "x": 12,
         "y": 12
       },
+      "hiddenSeries": false,
       "id": 8,
       "legend": {
         "alignAsTable": true,
@@ -398,9 +393,10 @@
       "links": [],
       "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -410,17 +406,16 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(rate(service_http_request_duration_seconds_sum{job=~\"$job\", exported_endpoint=~\"$endpoint\", method=~\"$method\", status=~\"$status\"}[$interval])\r) by (exported_endpoint)\n/\r\nsum(rate(service_http_request_duration_seconds_count{job=~\"$job\", exported_endpoint=~\"$endpoint\", method=~\"$method\", status=~\"$status\"}[$interval])) by (exported_endpoint)",
+          "expr": "rate(service_http_request_duration_seconds_sum{job=~\"$job\", endpoint=~\"$endpoint\", method=~\"$method\", status=~\"$status\"}[$interval])\r\n/\r\nrate(service_http_request_duration_seconds_count{job=~\"$job\", endpoint=~\"$endpoint\", method=~\"$method\", status=~\"$status\"}[$interval])",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{ exported_endpoint }}",
+          "legendFormat": "{{ endpoint }}-{{method}}-{{status}}",
           "refId": "A"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Duration per request",
       "tooltip": {
         "shared": true,
@@ -429,33 +424,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "format": "short",
-          "label": null,
+          "format": "s",
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -463,7 +449,15 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
+      "datasource": {
+        "uid": "$datasource"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -472,6 +466,7 @@
         "x": 0,
         "y": 23
       },
+      "hiddenSeries": false,
       "id": 10,
       "legend": {
         "avg": true,
@@ -487,9 +482,10 @@
       "links": [],
       "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -499,17 +495,16 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "histogram_quantile($quantile, sum(rate(service_http_request_duration_seconds_bucket{job=~\"$job\", exported_endpoint=~\"$endpoint\", method=~\"$method\", status=~\"$status\"}[$interval])) by (le))",
+          "expr": "histogram_quantile($quantile, sum(rate(service_http_request_duration_seconds_bucket{job=~\"$job\", endpoint=~\"$endpoint\", method=~\"$method\", status=~\"$status\"}[$interval])) by (le))",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{ exported_endpoint }}",
+          "legendFormat": "{{ endpoint }}",
           "refId": "A"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Quantile of requests",
       "tooltip": {
         "shared": true,
@@ -518,33 +513,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "format": "short",
-          "label": null,
+          "format": "s",
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -552,8 +538,16 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "$datasource",
+      "datasource": {
+        "uid": "$datasource"
+      },
       "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -562,6 +556,7 @@
         "x": 12,
         "y": 23
       },
+      "hiddenSeries": false,
       "id": 6,
       "legend": {
         "alignAsTable": true,
@@ -578,9 +573,10 @@
       "links": [],
       "nullPointMode": "null as zero",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "8.5.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -590,17 +586,16 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(rate(service_http_response_size_bytes_sum{job=~\"$job\", exported_endpoint=~\"$endpoint\", method=~\"$method\", status=~\"$status\"}[$interval])) by (exported_endpoint)\n/\nsum(rate(service_http_response_size_bytes_count{job=~\"$job\", exported_endpoint=~\"$endpoint\", method=~\"$method\", status=~\"$status\"}[$interval])) by (exported_endpoint)",
+          "expr": "rate(service_http_response_size_bytes_sum{job=~\"$job\", endpoint=~\"$endpoint\", method=~\"$method\", status=~\"$status\"}[$interval])\n/\nrate(service_http_response_size_bytes_count{job=~\"$job\", endpoint=~\"$endpoint\", method=~\"$method\", status=~\"$status\"}[$interval])",
           "format": "time_series",
+          "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{ exported_endpoint }}",
+          "legendFormat": "{{ endpoint }}-{{method}}-{{status}}",
           "refId": "A"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Response size(bytes) per second",
       "tooltip": {
         "shared": true,
@@ -609,38 +604,29 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "format": "short",
-          "label": null,
+          "format": "bytes",
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     }
   ],
   "refresh": false,
-  "schemaVersion": 20,
+  "schemaVersion": 36,
   "style": "dark",
   "tags": [
     "Service"
@@ -648,38 +634,70 @@
   "templating": {
     "list": [
       {
-        "allValue": null,
         "current": {
-          "text": "",
-          "value": ""
+          "selected": true,
+          "text": [
+            "exporters"
+          ],
+          "value": [
+            "exporters"
+          ]
         },
-        "datasource": "$datasource",
+        "definition": "label_values(up,job)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "host",
+        "multi": true,
+        "name": "host",
+        "options": [],
+        "query": {
+          "query": "label_values(up,job)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": ".*(exporters).*",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "exporters",
+          "value": "exporters"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "$datasource"
+        },
         "definition": "label_values(service_http_request_count_total, job)",
         "hide": 0,
         "includeAll": false,
-        "label": "Job",
+        "label": "ip",
         "multi": false,
         "name": "job",
         "options": [],
-        "query": "label_values(service_http_request_count_total, job)",
+        "query": {
+          "query": "label_values(service_http_request_count_total, job)",
+          "refId": "Prometheus-job-Variable-Query"
+        },
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
-        "sort": 1,
+        "sort": 0,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
       },
       {
         "current": {
+          "selected": false,
           "text": "Prometheus",
           "value": "Prometheus"
         },
         "hide": 2,
         "includeAll": false,
-        "label": null,
         "multi": false,
         "name": "datasource",
         "options": [],
@@ -694,6 +712,7 @@
         "auto_count": 30,
         "auto_min": "10s",
         "current": {
+          "selected": false,
           "text": "1m",
           "value": "1m"
         },
@@ -758,37 +777,45 @@
         "type": "interval"
       },
       {
-        "allValue": null,
         "current": {
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
-        "datasource": "Prometheus",
-        "definition": "label_values(service_http_request_count_total{exported_endpoint!~\"/metrics\", job=~\"$job\"}, exported_endpoint)",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "$datasource"
+        },
+        "definition": "label_values(service_http_request_count_total{endpoint!~\"/metrics\", status!=\"404\", job=~\"$job\"}, endpoint)",
         "hide": 0,
         "includeAll": true,
         "label": "Endpoint",
         "multi": false,
         "name": "endpoint",
         "options": [],
-        "query": "label_values(service_http_request_count_total{exported_endpoint!~\"/metrics\", job=~\"$job\"}, exported_endpoint)",
+        "query": {
+          "query": "label_values(service_http_request_count_total{endpoint!~\"/metrics\", status!=\"404\", job=~\"$job\"}, endpoint)",
+          "refId": "Prometheus-endpoint-Variable-Query"
+        },
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
       },
       {
-        "allValue": null,
         "current": {
+          "selected": false,
           "text": "GET",
           "value": "GET"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "$datasource"
+        },
         "definition": "label_values(service_http_request_count_total, method)",
         "hide": 0,
         "includeAll": true,
@@ -796,24 +823,29 @@
         "multi": false,
         "name": "method",
         "options": [],
-        "query": "label_values(service_http_request_count_total, method)",
+        "query": {
+          "query": "label_values(service_http_request_count_total, method)",
+          "refId": "Prometheus-method-Variable-Query"
+        },
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
       },
       {
-        "allValue": null,
         "current": {
+          "selected": false,
           "text": "200",
           "value": "200"
         },
-        "datasource": "Prometheus",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "$datasource"
+        },
         "definition": "label_values(service_http_request_count_total, status)",
         "hide": 0,
         "includeAll": true,
@@ -821,22 +853,24 @@
         "multi": false,
         "name": "status",
         "options": [],
-        "query": "label_values(service_http_request_count_total, status)",
+        "query": {
+          "query": "label_values(service_http_request_count_total, status)",
+          "refId": "Prometheus-status-Variable-Query"
+        },
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
       },
       {
-        "allValue": null,
         "current": {
-          "text": "0.25",
-          "value": "0.25"
+          "tags": [],
+          "text": "0.95",
+          "value": "0.95"
         },
         "hide": 0,
         "includeAll": false,
@@ -845,7 +879,7 @@
         "name": "quantile",
         "options": [
           {
-            "selected": false,
+            "selected": true,
             "text": "0.95",
             "value": "0.95"
           },
@@ -855,7 +889,7 @@
             "value": "0.75"
           },
           {
-            "selected": true,
+            "selected": false,
             "text": "0.25",
             "value": "0.25"
           }
@@ -867,7 +901,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {
@@ -895,7 +929,8 @@
     ]
   },
   "timezone": "browser",
-  "title": "HTTP Services",
+  "title": "Gin Service",
   "uid": "EyaoypOZz",
-  "version": 6
+  "version": 4,
+  "weekStart": ""
 }

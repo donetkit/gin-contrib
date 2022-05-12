@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+	"github.com/donetkit/gin-contrib-log/glog"
 	"github.com/donetkit/gin-contrib/discovery"
 	"github.com/donetkit/gin-contrib/discovery/consul"
 	logger2 "github.com/donetkit/gin-contrib/middleware/logger"
 	"github.com/donetkit/gin-contrib/server"
-	"github.com/donetkit/gin-contrib/utils/glog"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"

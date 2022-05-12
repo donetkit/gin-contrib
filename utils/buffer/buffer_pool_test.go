@@ -1,4 +1,4 @@
-package timeout
+package buffer
 
 import (
 	"testing"
