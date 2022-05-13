@@ -131,13 +131,13 @@ var defaultLogFormatter = func(param LogFormatterParams) string {
 	)
 }
 
-// DisableConsoleColor disables color output in the console.
-func DisableConsoleColor() {
+// disableConsoleColor disables color output in the console.
+func disableConsoleColor() {
 	consoleColorMode = disableColor
 }
 
-// ForceConsoleColor force color output in the console.
-func ForceConsoleColor() {
+// forceConsoleColor force color output in the console.
+func forceConsoleColor() {
 	consoleColorMode = forceColor
 }
 
@@ -160,6 +160,7 @@ func ErrorLoggerT(typ gin.ErrorType) gin.HandlerFunc {
 // New instances a Logger middleware that will write the logs to gin.DefaultWriter. By default gin.DefaultWriter = os.Stdout.
 func New(opts ...Option) gin.HandlerFunc {
 	cfg := &config{
+		consoleColor: true,
 		endpointLabelMappingFn: func(c *gin.Context) string {
 			return c.Request.URL.Path
 		}}
@@ -168,6 +169,11 @@ func New(opts ...Option) gin.HandlerFunc {
 	}
 	if cfg.formatter == nil {
 		cfg.formatter = defaultLogFormatter
+	}
+	if cfg.consoleColor {
+		forceConsoleColor()
+	} else {
+		disableConsoleColor()
 	}
 	isTerm := true
 	return func(c *gin.Context) {

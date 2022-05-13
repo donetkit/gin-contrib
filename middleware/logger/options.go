@@ -11,6 +11,7 @@ type config struct {
 	excludeRegexEndpoint   []string
 	excludeRegexMethod     []string
 	endpointLabelMappingFn RequestLabelMappingFn
+	consoleColor           bool
 }
 
 // Option for queue system
@@ -59,5 +60,12 @@ func WithEndpointLabelMappingFn(endpointLabelMappingFn RequestLabelMappingFn) Op
 func WithFormatter(formatter LogFormatter) Option {
 	return func(cfg *config) {
 		cfg.formatter = formatter
+	}
+}
+
+// WithConsoleColor set consoleColor function
+func WithConsoleColor(consoleColor bool) Option {
+	return func(cfg *config) {
+		cfg.consoleColor = consoleColor
 	}
 }
