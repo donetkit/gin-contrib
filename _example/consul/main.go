@@ -12,7 +12,7 @@ import (
 
 func main() {
 	r := gin.New()
-	consulClient, _ := consul.New(discovery.WithServiceRegisterAddr("192.168.5.110"))
+	consulClient, _ := consul.New(discovery.WithServiceRegisterAddr("127.0.0.1"))
 	// Example ping request.
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong "+fmt.Sprint(time.Now().Unix()))
