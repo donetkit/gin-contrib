@@ -14,7 +14,7 @@ import (
 
 func main() {
 	logs := glog.NewDefaultLogger()
-	consulClient, _ := consul.New(discovery.WithServiceRegisterAddr("192.168.5.110"))
+	consulClient, _ := consul.New(discovery.WithServiceRegisterAddr("127.0.0.1"))
 	r := gin.New()
 	r.Use(logger2.New(logger2.WithLogger(logs)))
 	r.GET("/ping", func(c *gin.Context) {
