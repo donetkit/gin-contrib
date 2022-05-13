@@ -29,8 +29,8 @@ const (
 
 var consoleColorMode = autoColor
 
-// LoggerConfig defines the config for Logger middleware.
-type LoggerConfig struct {
+// Config defines the config for Logger middleware.
+type Config struct {
 	// Optional. Default value is gin.defaultLogFormatter
 	Formatter LogFormatter
 
@@ -155,12 +155,12 @@ func ForceConsoleColor() {
 	consoleColorMode = forceColor
 }
 
-// ErrorLogger returns a handlerfunc for any error type.
+// ErrorLogger returns a handler func for any error type.
 func ErrorLogger() gin.HandlerFunc {
 	return ErrorLoggerT(gin.ErrorTypeAny)
 }
 
-// ErrorLoggerT returns a handlerfunc for a given error type.
+// ErrorLoggerT returns a handler func for a given error type.
 func ErrorLoggerT(typ gin.ErrorType) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Next()
@@ -177,40 +177,40 @@ func New(opts ...Option) gin.HandlerFunc {
 	for _, opt := range opts {
 		opt(cfg)
 	}
-	return LoggerWithConfig(LoggerConfig{
+	return loggerConfig(Config{
 		Output: cfg.logger,
 	})
 }
 
-// LoggerWithFormatter instance a Logger middleware with the specified log format function.
-func LoggerWithFormatter(f LogFormatter) gin.HandlerFunc {
-	return LoggerWithConfig(LoggerConfig{
+// WithLoggerFormatter instance a Logger middleware with the specified log format function.
+func WithLoggerFormatter(f LogFormatter) gin.HandlerFunc {
+	return loggerConfig(Config{
 		Formatter: f,
 	})
 }
 
-// LoggerWithWriter instance a Logger middleware with the specified writer buffer.
+// WithLoggerWriter instance a Logger middleware with the specified writer buffer.
 // Example: os.Stdout, a file opened in write mode, a socket...
-func LoggerWithWriter(out glog.ILogger, notlogged ...string) gin.HandlerFunc {
-	return LoggerWithConfig(LoggerConfig{
+func WithLoggerWriter(out glog.ILogger, skipPaths ...string) gin.HandlerFunc {
+	return loggerConfig(Config{
 		Output:    out,
-		SkipPaths: notlogged,
+		SkipPaths: skipPaths,
 	})
 }
 
-// LoggerWithConfig instance a Logger middleware with config.
-func LoggerWithConfig(conf LoggerConfig) gin.HandlerFunc {
+// loggerConfig instance a Logger middleware with config.
+func loggerConfig(conf Config) gin.HandlerFunc {
 	formatter := conf.Formatter
 	if formatter == nil {
 		formatter = defaultLogFormatter
 	}
-	notlogged := conf.SkipPaths
+	skipPaths := conf.SkipPaths
 
 	isTerm := true
 	var skip map[string]struct{}
-	if length := len(notlogged); length > 0 {
+	if length := len(skipPaths); length > 0 {
 		skip = make(map[string]struct{}, length)
-		for _, path := range notlogged {
+		for _, path := range skipPaths {
 			skip[path] = struct{}{}
 		}
 	}
