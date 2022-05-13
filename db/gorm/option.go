@@ -135,10 +135,3 @@ func WithMaxIdleCons(maxIdleCons int) Option {
 		p.sqlConfig.maxIdleCons = maxIdleCons
 	}
 }
-
-// WithUpdateTimeStamp  updateTimeStamp
-func WithUpdateTimeStamp(updateTimeStamp bool) Option {
-	return func(p *config) {
-		p.sqlConfig.updateTimeStamp = updateTimeStamp
-	}
-}

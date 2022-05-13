@@ -44,7 +44,6 @@ type sqlConfig struct {
 	dontSupportRenameIndex    bool          // 重命名索引时采用删除并新建的方式，MySQL 5.7 之前的数据库和 MariaDB 不支持重命名索引
 	dontSupportRenameColumn   bool          // 用 `change` 重命名列，MySQL 8 之前的数据库和 MariaDB 不支持重命名列
 	skipInitializeWithVersion bool          // 根据当前 MySQL 版本自动配置
-	updateTimeStamp           bool          // 更新更新时间字段
 	connMaxIdleTime           time.Duration // 设置了连接可复用的最大时间
 	maxOpenCons               int           // 设置打开数据库连接的最大数量
 	maxIdleCons               int           // 设置空闲连接池中连接的最大数量
@@ -94,17 +93,7 @@ func NewDb(opts ...Option) *Client {
 			sdb.SetMaxIdleConns(c.sqlConfig.maxIdleCons)        //最大连接数 1000 SetMaxIdleConns 用于设置连接池中空闲连接的最大数量。
 		}
 
-		if c.sqlConfig.updateTimeStamp {
-			db.Callback().Update().Before("gorm:update").Register("gorm:update_time_stamp", updateTimeStampCallback)
-		}
-
 		dbs[key] = db
 	}
 	return &Client{Client: dbs, config: c}
-}
-
-func updateTimeStampCallback(db *gorm.DB) {
-	if db.Statement != nil {
-		db.Statement.SetColumn("updated_at", time.Now().UnixNano()/1000000)
-	}
 }
