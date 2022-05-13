@@ -17,7 +17,7 @@ const (
 func main() {
 	r := gin.New()
 
-	tp, err := trace.NewTracerProvider(service, "192.168.5.110", environment, 6831)
+	tp, err := trace.NewTracerProvider(service, "127.0.0.1", environment, 6831)
 	if err == nil {
 		jaeger := trace.Jaeger{}
 		traceServer := trace.New(service, trace.WithTracerProvider(tp), trace.WithPropagators(jaeger))
