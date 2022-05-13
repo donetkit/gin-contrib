@@ -15,11 +15,11 @@ import (
 
 var dbRowsAffected = attribute.Key("db.rows_affected")
 
-func NewPlugin(plugin *gormConfig) *gormConfig {
+func NewPlugin(plugin *sqlConfig) *sqlConfig {
 	return plugin
 }
 
-func (p *gormConfig) Name() string {
+func (p *sqlConfig) Name() string {
 	return "gorm"
 }
 
@@ -29,7 +29,7 @@ type gormRegister interface {
 	Register(name string, fn func(*gorm.DB)) error
 }
 
-func (p *gormConfig) Initialize(db *gorm.DB) (err error) {
+func (p *sqlConfig) Initialize(db *gorm.DB) (err error) {
 	if !p.excludeMetrics {
 		if db, ok := db.ConnPool.(*sql.DB); ok {
 			db_sql.ReportDBStatsMetrics(db)
@@ -70,7 +70,7 @@ func (p *gormConfig) Initialize(db *gorm.DB) (err error) {
 	return firstErr
 }
 
-func (p *gormConfig) before(spanName string) gormHookFunc {
+func (p *sqlConfig) before(spanName string) gormHookFunc {
 	return func(tx *gorm.DB) {
 		var name string
 		if p.tracerServer == nil {
@@ -85,7 +85,7 @@ func (p *gormConfig) before(spanName string) gormHookFunc {
 	}
 }
 
-func (p *gormConfig) after() gormHookFunc {
+func (p *sqlConfig) after() gormHookFunc {
 	return func(tx *gorm.DB) {
 		if p.tracerServer == nil {
 			return
@@ -136,7 +136,7 @@ func (p *gormConfig) after() gormHookFunc {
 	}
 }
 
-func (p *gormConfig) formatQuery(query string) string {
+func (p *sqlConfig) formatQuery(query string) string {
 	if p.queryFormatter != nil {
 		return p.queryFormatter(query)
 	}

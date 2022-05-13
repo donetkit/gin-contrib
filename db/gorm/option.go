@@ -20,97 +20,125 @@ func WithDNS(dsn map[string]string) Option {
 // WithSlowThreshold  slowThreshold
 func WithSlowThreshold(slowThreshold time.Duration) Option {
 	return func(p *config) {
-		p.gormConfig.slowThreshold = slowThreshold
+		p.sqlConfig.slowThreshold = slowThreshold
 	}
 }
 
 // WithIgnoreRecordNotFoundError  ignoreRecordNotFoundError
 func WithIgnoreRecordNotFoundError(ignoreRecordNotFoundError bool) Option {
 	return func(p *config) {
-		p.gormConfig.ignoreRecordNotFoundError = ignoreRecordNotFoundError
+		p.sqlConfig.ignoreRecordNotFoundError = ignoreRecordNotFoundError
 	}
 }
 
 // WithTracer  tracerServer trace.Server
 func WithTracer(tracerServer *trace.Server) Option {
 	return func(p *config) {
-		p.gormConfig.tracerServer = tracerServer
+		p.sqlConfig.tracerServer = tracerServer
 	}
 }
 
 // WithAttributes configures attributes that are used to create a span.
 func WithAttributes(attrs ...attribute.KeyValue) Option {
 	return func(p *config) {
-		p.gormConfig.attrs = append(p.gormConfig.attrs, attrs...)
+		p.sqlConfig.attrs = append(p.sqlConfig.attrs, attrs...)
 	}
 }
 
 // WithDBName configures a db.name attribute.
 func WithDBName(name string) Option {
 	return func(p *config) {
-		p.gormConfig.attrs = append(p.gormConfig.attrs, semconv.DBNameKey.String(name))
+		p.sqlConfig.attrs = append(p.sqlConfig.attrs, semconv.DBNameKey.String(name))
 	}
 }
 
 // WithoutQueryVariables configures the db.statement attribute to exclude query variables
 func WithoutQueryVariables() Option {
 	return func(p *config) {
-		p.gormConfig.excludeQueryVars = true
+		p.sqlConfig.excludeQueryVars = true
 	}
 }
 
 // WithQueryFormatter configures a query formatter
 func WithQueryFormatter(queryFormatter func(query string) string) Option {
 	return func(p *config) {
-		p.gormConfig.queryFormatter = queryFormatter
+		p.sqlConfig.queryFormatter = queryFormatter
 	}
 }
 
 // WithoutMetrics prevents DBStats metrics from being reported.
 func WithoutMetrics() Option {
 	return func(p *config) {
-		p.gormConfig.excludeMetrics = true
+		p.sqlConfig.excludeMetrics = true
 	}
 }
 
 // WithLogger prevents logger.
 func WithLogger(logger glog.ILogger) Option {
 	return func(p *config) {
-		p.gormConfig.logger = logger
+		p.sqlConfig.logger = logger
 	}
 }
 
 // WithDefaultStringSize  defaultStringSize
 func WithDefaultStringSize(defaultStringSize uint) Option {
 	return func(p *config) {
-		p.gormConfig.defaultStringSize = defaultStringSize
+		p.sqlConfig.defaultStringSize = defaultStringSize
 	}
 }
 
 // WithDisableDatetimePrecision  disableDatetimePrecision
 func WithDisableDatetimePrecision(disableDatetimePrecision bool) Option {
 	return func(p *config) {
-		p.gormConfig.disableDatetimePrecision = disableDatetimePrecision
+		p.sqlConfig.disableDatetimePrecision = disableDatetimePrecision
 	}
 }
 
 // WithDontSupportRenameIndex  dontSupportRenameIndex
 func WithDontSupportRenameIndex(dontSupportRenameIndex bool) Option {
 	return func(p *config) {
-		p.gormConfig.dontSupportRenameIndex = dontSupportRenameIndex
+		p.sqlConfig.dontSupportRenameIndex = dontSupportRenameIndex
 	}
 }
 
 // WithDontSupportRenameColumn  dontSupportRenameColumn
 func WithDontSupportRenameColumn(dontSupportRenameColumn bool) Option {
 	return func(p *config) {
-		p.gormConfig.dontSupportRenameColumn = dontSupportRenameColumn
+		p.sqlConfig.dontSupportRenameColumn = dontSupportRenameColumn
 	}
 }
 
 // WithSkipInitializeWithVersion  skipInitializeWithVersion
 func WithSkipInitializeWithVersion(skipInitializeWithVersion bool) Option {
 	return func(p *config) {
-		p.gormConfig.skipInitializeWithVersion = skipInitializeWithVersion
+		p.sqlConfig.skipInitializeWithVersion = skipInitializeWithVersion
+	}
+}
+
+// WithConnMaxIdleTime  connMaxIdleTime
+func WithConnMaxIdleTime(connMaxIdleTime time.Duration) Option {
+	return func(p *config) {
+		p.sqlConfig.connMaxIdleTime = connMaxIdleTime
+	}
+}
+
+// WithMaxOpenCons  maxOpenCons
+func WithMaxOpenCons(maxOpenCons int) Option {
+	return func(p *config) {
+		p.sqlConfig.maxOpenCons = maxOpenCons
+	}
+}
+
+// WithMaxIdleCons  maxIdleCons
+func WithMaxIdleCons(maxIdleCons int) Option {
+	return func(p *config) {
+		p.sqlConfig.maxIdleCons = maxIdleCons
+	}
+}
+
+// WithUpdateTimeStamp  updateTimeStamp
+func WithUpdateTimeStamp(updateTimeStamp bool) Option {
+	return func(p *config) {
+		p.sqlConfig.updateTimeStamp = updateTimeStamp
 	}
 }

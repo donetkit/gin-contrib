@@ -21,7 +21,7 @@ var (
 
 type LogSql struct {
 	Logger glog.ILogger
-	config *gormConfig
+	config *sqlConfig
 }
 
 func (l *LogSql) LogMode(level logger.LogLevel) logger.Interface {
