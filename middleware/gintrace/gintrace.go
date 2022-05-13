@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/donetkit/gin-contrib/trace"
 	"github.com/gin-gonic/gin"
+	"regexp"
 
 	"go.opentelemetry.io/otel/codes"
 
@@ -17,15 +18,31 @@ const (
 	tracerKey = "go-contrib-tracer-key"
 )
 
+type RequestLabelMappingFn func(c *gin.Context) string
+
 // New returns middleware that will trace incoming requests.
 // The service parameter should describe the name of the (virtual)
 // server handling the request.
 func New(service string, opts ...Option) gin.HandlerFunc {
-	cfg := config{}
+	cfg := config{
+		endpointLabelMappingFn: func(c *gin.Context) string {
+			return c.Request.URL.Path
+		}}
 	for _, opt := range opts {
 		opt.apply(&cfg)
 	}
 	return func(c *gin.Context) {
+		if cfg.tracerServer == nil {
+			return
+		}
+		endpoint := cfg.endpointLabelMappingFn(c)
+		method := c.Request.Method
+		isOk := cfg.checkLabel(fmt.Sprintf("%d", c.Writer.Status()), cfg.excludeRegexStatus) && cfg.checkLabel(endpoint, cfg.excludeRegexEndpoint) && cfg.checkLabel(method, cfg.excludeRegexMethod)
+
+		if !isOk {
+			return
+		}
+
 		c.Set(tracerKey, cfg.tracerServer)
 		savedCtx := c.Request.Context()
 		defer func() {
@@ -93,4 +110,25 @@ func HTML(c *gin.Context, code int, name string, obj interface{}) {
 		}
 	}()
 	c.HTML(code, name, obj)
+}
+
+// checkLabel returns the match result of labels.
+// Return true if regex-pattern compiles failed.
+func (c *config) checkLabel(label string, patterns []string) bool {
+	if len(patterns) <= 0 {
+		return true
+	}
+	for _, pattern := range patterns {
+		if pattern == "" {
+			return true
+		}
+		matched, err := regexp.MatchString(pattern, label)
+		if err != nil {
+			return true
+		}
+		if matched {
+			return false
+		}
+	}
+	return true
 }
