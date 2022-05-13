@@ -16,10 +16,12 @@ const (
 
 func main() {
 	r := gin.New()
+
 	tp, err := trace.NewTracerProvider(service, "192.168.5.110", environment, 6831)
 	if err == nil {
 		jaeger := trace.Jaeger{}
-		r.Use(gintrace.Middleware(service, gintrace.WithTracerProvider(tp), gintrace.WithPropagators(jaeger)))
+		traceServer := trace.New(service, trace.WithTracerProvider(tp), trace.WithPropagators(jaeger))
+		r.Use(gintrace.New(service, gintrace.WithTracer(traceServer)))
 		defer func() {
 			tp.Shutdown(context.Background())
 		}()
