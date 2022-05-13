@@ -2,13 +2,15 @@ package logger
 
 import (
 	"fmt"
-	"github.com/donetkit/gin-contrib-log/glog"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"regexp"
 	"time"
 )
 
 type consoleColorModeValue int
+
+type RequestLabelMappingFn func(c *gin.Context) string
 
 const (
 	autoColor consoleColorModeValue = iota
@@ -28,20 +30,6 @@ const (
 )
 
 var consoleColorMode = autoColor
-
-// Config defines the config for Logger middleware.
-type Config struct {
-	// Optional. Default value is gin.defaultLogFormatter
-	Formatter LogFormatter
-
-	// Output is a writer where logs are written.
-	// Optional. Default value is gin.DefaultWriter.
-	Output glog.ILogger
-
-	// SkipPaths is a url path array which logs are not written.
-	// Optional.
-	SkipPaths []string
-}
 
 // LogFormatter gives the signature of the formatter function passed to LoggerWithFormatter
 type LogFormatter func(params LogFormatterParams) string
@@ -75,7 +63,6 @@ type LogFormatterParams struct {
 // StatusCodeColor is the ANSI color for appropriately logging http status code to a terminal.
 func (p *LogFormatterParams) StatusCodeColor() string {
 	code := p.StatusCode
-
 	switch {
 	case code >= http.StatusOK && code < http.StatusMultipleChoices:
 		return green
@@ -91,7 +78,6 @@ func (p *LogFormatterParams) StatusCodeColor() string {
 // MethodColor is the ANSI color for appropriately logging http method to a terminal.
 func (p *LogFormatterParams) MethodColor() string {
 	method := p.Method
-
 	switch method {
 	case http.MethodGet:
 		return blue
@@ -173,49 +159,19 @@ func ErrorLoggerT(typ gin.ErrorType) gin.HandlerFunc {
 
 // New instances a Logger middleware that will write the logs to gin.DefaultWriter. By default gin.DefaultWriter = os.Stdout.
 func New(opts ...Option) gin.HandlerFunc {
-	cfg := &config{}
+	cfg := &config{
+		endpointLabelMappingFn: func(c *gin.Context) string {
+			return c.Request.URL.Path
+		}}
 	for _, opt := range opts {
 		opt(cfg)
 	}
-	return loggerConfig(Config{
-		Output: cfg.logger,
-	})
-}
-
-// WithLoggerFormatter instance a Logger middleware with the specified log format function.
-func WithLoggerFormatter(f LogFormatter) gin.HandlerFunc {
-	return loggerConfig(Config{
-		Formatter: f,
-	})
-}
-
-// WithLoggerWriter instance a Logger middleware with the specified writer buffer.
-// Example: os.Stdout, a file opened in write mode, a socket...
-func WithLoggerWriter(out glog.ILogger, skipPaths ...string) gin.HandlerFunc {
-	return loggerConfig(Config{
-		Output:    out,
-		SkipPaths: skipPaths,
-	})
-}
-
-// loggerConfig instance a Logger middleware with config.
-func loggerConfig(conf Config) gin.HandlerFunc {
-	formatter := conf.Formatter
-	if formatter == nil {
-		formatter = defaultLogFormatter
+	if cfg.formatter == nil {
+		cfg.formatter = defaultLogFormatter
 	}
-	skipPaths := conf.SkipPaths
-
 	isTerm := true
-	var skip map[string]struct{}
-	if length := len(skipPaths); length > 0 {
-		skip = make(map[string]struct{}, length)
-		for _, path := range skipPaths {
-			skip[path] = struct{}{}
-		}
-	}
 	return func(c *gin.Context) {
-		if conf.Output == nil {
+		if cfg.logger == nil {
 			return
 		}
 		// Start timer
@@ -223,32 +179,56 @@ func loggerConfig(conf Config) gin.HandlerFunc {
 		path := c.Request.URL.Path
 		raw := c.Request.URL.RawQuery
 
+		endpoint := cfg.endpointLabelMappingFn(c)
+		method := c.Request.Method
+		isOk := cfg.checkLabel(fmt.Sprintf("%d", c.Writer.Status()), cfg.excludeRegexStatus) && cfg.checkLabel(endpoint, cfg.excludeRegexEndpoint) && cfg.checkLabel(method, cfg.excludeRegexMethod)
+
+		if !isOk {
+			return
+		}
+
 		// Process request
 		c.Next()
-		// Log only when path is not being skipped
-		if _, ok := skip[path]; !ok {
-			param := LogFormatterParams{
-				Request: c.Request,
-				isTerm:  isTerm,
-				Keys:    c.Keys,
-			}
+		param := LogFormatterParams{
+			Request: c.Request,
+			isTerm:  isTerm,
+			Keys:    c.Keys,
+		}
+		// Stop timer
+		param.TimeStamp = time.Now()
+		param.Latency = param.TimeStamp.Sub(start)
 
-			// Stop timer
-			param.TimeStamp = time.Now()
-			param.Latency = param.TimeStamp.Sub(start)
+		param.ClientIP = c.ClientIP()
+		param.Method = c.Request.Method
+		param.StatusCode = c.Writer.Status()
+		param.ErrorMessage = c.Errors.ByType(gin.ErrorTypePrivate).String()
+		param.BodySize = c.Writer.Size()
+		if raw != "" {
+			path = path + "?" + raw
+		}
+		param.Path = path
+		cfg.logger.Info(cfg.formatter(param))
 
-			param.ClientIP = c.ClientIP()
-			param.Method = c.Request.Method
-			param.StatusCode = c.Writer.Status()
-			param.ErrorMessage = c.Errors.ByType(gin.ErrorTypePrivate).String()
+	}
+}
 
-			param.BodySize = c.Writer.Size()
-
-			if raw != "" {
-				path = path + "?" + raw
-			}
-			param.Path = path
-			conf.Output.Info(formatter(param))
+// checkLabel returns the match result of labels.
+// Return true if regex-pattern compiles failed.
+func (c *config) checkLabel(label string, patterns []string) bool {
+	if len(patterns) <= 0 {
+		return true
+	}
+	for _, pattern := range patterns {
+		if pattern == "" {
+			return true
+		}
+		matched, err := regexp.MatchString(pattern, label)
+		if err != nil {
+			return true
+		}
+		if matched {
+			return false
 		}
 	}
+	return true
 }
