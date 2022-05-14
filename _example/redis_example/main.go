@@ -16,7 +16,7 @@ const (
 func main() {
 	ctx := context.Background()
 
-	log := glog.NewDefaultLogger()
+	log := glog.New()
 	var traceServer *trace.Server
 	tp, err := trace.NewTracerProvider(service, "127.0.0.1", environment, 6831)
 	if err == nil {

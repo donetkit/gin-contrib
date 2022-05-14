@@ -188,7 +188,6 @@ func (r *Client) ReleaseLock(db int, lockName, code string, c ...context.Context
 		} else if v == code {
 			_, err := tx.Pipelined(ctx, func(pipe redis.Pipeliner) error {
 				//count++
-				//fmt.Println(count)
 				pipe.Del(ctx, lockName)
 				return nil
 			})
@@ -201,9 +200,9 @@ func (r *Client) ReleaseLock(db int, lockName, code string, c ...context.Context
 		if err := r.Client[db].Watch(ctx, txf, lockName); err == nil {
 			return true
 		} else if err == redis.TxFailedErr {
-			fmt.Println("watch key is modified, retry to release lock. err:", err.Error())
+			r.config.logger.Errorf("watch key is modified, retry to release lock. err: %s", err.Error())
 		} else {
-			fmt.Println("err:", err.Error())
+			r.config.logger.Errorf("err: %s", err.Error())
 			return false
 		}
 	}

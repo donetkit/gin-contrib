@@ -33,21 +33,21 @@ func (l *LogSql) Info(ctx context.Context, msg string, data ...interface{}) {
 	if l.Logger == nil {
 		return
 	}
-	l.Logger.Info(infoStr+msg, append([]interface{}{utils.FileWithLineNum()}, data...)...)
+	l.Logger.Infof(fmt.Sprintf(infoStr, utils.FileWithLineNum())+msg, data...)
 }
 
 func (l *LogSql) Warn(ctx context.Context, msg string, data ...interface{}) {
 	if l.Logger == nil {
 		return
 	}
-	l.Logger.Warning(warnStr+msg, append([]interface{}{utils.FileWithLineNum()}, data...)...)
+	l.Logger.Warningf(fmt.Sprintf(warnStr, utils.FileWithLineNum())+msg, data...)
 }
 
 func (l *LogSql) Error(ctx context.Context, msg string, data ...interface{}) {
 	if l.Logger == nil {
 		return
 	}
-	l.Logger.Error(errStr+msg, append([]interface{}{utils.FileWithLineNum()}, data...)...)
+	l.Logger.Errorf(fmt.Sprintf(errStr, utils.FileWithLineNum())+msg, data...)
 }
 
 func (l *LogSql) Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error) {
@@ -59,24 +59,24 @@ func (l *LogSql) Trace(ctx context.Context, begin time.Time, fc func() (sql stri
 	case err != nil && (!errors.Is(err, logger.ErrRecordNotFound) || !l.config.ignoreRecordNotFoundError):
 		sql, rows := fc()
 		if rows == -1 {
-			l.Logger.Info(traceErrStr, utils.FileWithLineNum(), err, float64(elapsed.Nanoseconds())/1e6, "-", sql)
+			l.Logger.Info(fmt.Sprintf(traceErrStr, utils.FileWithLineNum(), err, float64(elapsed.Nanoseconds())/1e6, "-", sql))
 		} else {
-			l.Logger.Info(traceErrStr, utils.FileWithLineNum(), err, float64(elapsed.Nanoseconds())/1e6, rows, sql)
+			l.Logger.Info(fmt.Sprintf(traceErrStr, utils.FileWithLineNum(), err, float64(elapsed.Nanoseconds())/1e6, rows, sql))
 		}
 	case elapsed > l.config.slowThreshold && l.config.slowThreshold != 0:
 		sql, rows := fc()
 		slowLog := fmt.Sprintf("SLOW SQL >= %v", l.config.slowThreshold)
 		if rows == -1 {
-			l.Logger.Info(traceWarnStr, utils.FileWithLineNum(), slowLog, float64(elapsed.Nanoseconds())/1e6, "-", sql)
+			l.Logger.Info(fmt.Sprintf(traceWarnStr, utils.FileWithLineNum(), slowLog, float64(elapsed.Nanoseconds())/1e6, "-", sql))
 		} else {
-			l.Logger.Info(traceWarnStr, utils.FileWithLineNum(), slowLog, float64(elapsed.Nanoseconds())/1e6, rows, sql)
+			l.Logger.Info(fmt.Sprintf(traceWarnStr, utils.FileWithLineNum(), slowLog, float64(elapsed.Nanoseconds())/1e6, rows, sql))
 		}
 	case elapsed > l.config.slowThreshold && l.config.slowThreshold == 0:
 		sql, rows := fc()
 		if rows == -1 {
-			l.Logger.Info(traceStr, utils.FileWithLineNum(), float64(elapsed.Nanoseconds())/1e6, "-", sql)
+			l.Logger.Info(fmt.Sprintf(traceStr, utils.FileWithLineNum(), float64(elapsed.Nanoseconds())/1e6, "-", sql))
 		} else {
-			l.Logger.Info(traceStr, utils.FileWithLineNum(), float64(elapsed.Nanoseconds())/1e6, rows, sql)
+			l.Logger.Info(fmt.Sprintf(traceStr, utils.FileWithLineNum(), float64(elapsed.Nanoseconds())/1e6, rows, sql))
 		}
 	}
 }

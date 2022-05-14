@@ -3,7 +3,6 @@ package gorm
 import (
 	"github.com/donetkit/gin-contrib-log/glog"
 	"github.com/donetkit/gin-contrib/trace"
-	"github.com/prometheus/common/log"
 	"go.opentelemetry.io/otel/attribute"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -79,11 +78,11 @@ func NewDb(opts ...Option) *Client {
 			SkipInitializeWithVersion: false, // 根据当前 MySQL 版本自动配置
 		}), sqlConfig)
 		if err != nil && c.sqlConfig.logger != nil {
-			log.Error(err.Error())
+			c.sqlConfig.logger.Error(err)
 		}
 		if c.sqlConfig.tracerServer != nil {
 			if err := db.Use(NewPlugin(c.sqlConfig)); err != nil && c.sqlConfig.logger != nil {
-				log.Error(err.Error())
+				c.sqlConfig.logger.Error(err)
 			}
 		}
 		sdb, err := db.DB()

@@ -3,9 +3,9 @@ package server
 import (
 	"context"
 	"fmt"
-	"github.com/donetkit/gin-contrib-log/console_colors"
 	"github.com/donetkit/gin-contrib-log/glog"
 	"github.com/donetkit/gin-contrib/discovery"
+	"github.com/donetkit/gin-contrib/utils/console_colors"
 	"github.com/donetkit/gin-contrib/utils/files"
 	"github.com/donetkit/gin-contrib/utils/host"
 	"github.com/gin-gonic/gin"
@@ -44,7 +44,7 @@ func New(opts ...Option) (*Server, error) {
 		serviceName:    "demo",
 		host:           host.GetOutBoundIp(),
 		port:           80,
-		logger:         glog.NewDefaultLogger(),
+		logger:         glog.New(),
 		version:        "V0.1",
 		protocol:       "HTTP API",
 		pId:            os.Getpid(),
