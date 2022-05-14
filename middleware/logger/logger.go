@@ -182,38 +182,36 @@ func New(opts ...Option) gin.HandlerFunc {
 		}
 		// Start timer
 		start := time.Now()
-		path := c.Request.URL.Path
-		raw := c.Request.URL.RawQuery
-
-		endpoint := cfg.endpointLabelMappingFn(c)
 		method := c.Request.Method
+		endpoint := cfg.endpointLabelMappingFn(c)
 		isOk := cfg.checkLabel(fmt.Sprintf("%d", c.Writer.Status()), cfg.excludeRegexStatus) && cfg.checkLabel(endpoint, cfg.excludeRegexEndpoint) && cfg.checkLabel(method, cfg.excludeRegexMethod)
-
 		if !isOk {
 			return
 		}
-
-		// Process request
-		c.Next()
+		raw := c.Request.URL.RawQuery
 		param := LogFormatterParams{
 			Request: c.Request,
 			isTerm:  isTerm,
 			Keys:    c.Keys,
 		}
 		// Stop timer
-		param.TimeStamp = time.Now()
+		param.TimeStamp = start
 		param.Latency = param.TimeStamp.Sub(start)
-
 		param.ClientIP = c.ClientIP()
-		param.Method = c.Request.Method
+		param.Method = method
 		param.StatusCode = c.Writer.Status()
-		param.ErrorMessage = c.Errors.ByType(gin.ErrorTypePrivate).String()
 		param.BodySize = c.Writer.Size()
 		if raw != "" {
-			path = path + "?" + raw
+			endpoint = endpoint + "?" + raw
 		}
-		param.Path = path
-		cfg.logger.Info(cfg.formatter(param))
+		param.Path = endpoint
+		cfg.logger.Info("Start " + cfg.formatter(param))
+		// Process request
+		c.Next()
+		param.TimeStamp = time.Now() // Stop timer
+		param.Latency = param.TimeStamp.Sub(start)
+		param.ErrorMessage = c.Errors.ByType(gin.ErrorTypePrivate).String()
+		cfg.logger.Info("End   " + cfg.formatter(param))
 
 	}
 }
