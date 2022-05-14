@@ -30,23 +30,8 @@ func main() {
 	ctx, span := traceServer.Tracer.Start(ctx, "testgorm")
 	defer span.End()
 	var num []int
-	if err := sql.DB().WithContext(ctx).Raw("SELECT holiday FROM calendar where id != ''").Scan(&num).Error; err != nil {
+	if err := sql.DB().WithContext(ctx).Raw("SELECT id FROM test").Scan(&num).Error; err != nil {
 		log.Error(err)
-	}
-
-	var str []string
-	if err := sql.DB().WithContext(ctx).Raw("SELECT id FROM school").Scan(&str).Error; err != nil {
-		panic(err)
-	}
-
-	if err := sql.DB().WithContext(ctx).Raw("SELECT id FROM school_air_conditioner_room").Scan(&str).Error; err != nil {
-		log.Error(err)
-	}
-
-	for i := 0; i < 50; i++ {
-		if err := sql.DB().WithContext(ctx).Raw("SELECT id FROM school_air_conditioner_room").Scan(&str).Error; err != nil {
-			panic(err)
-		}
 	}
 
 }
