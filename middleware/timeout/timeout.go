@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var bufPool *buffer.BufferPool
+var bufPool *buffer.Pool
 
 const (
 	defaultTimeout = 5 * time.Second
@@ -35,7 +35,7 @@ func New(opts ...Option) gin.HandlerFunc {
 		return t.handler
 	}
 
-	bufPool = &buffer.BufferPool{}
+	bufPool = &buffer.Pool{}
 
 	return func(c *gin.Context) {
 		finish := make(chan struct{}, 1)
