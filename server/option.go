@@ -12,21 +12,21 @@ type Option func(*config)
 // WithServiceName set serviceName function
 func WithServiceName(serviceName string) Option {
 	return func(cfg *config) {
-		cfg.serviceName = serviceName
+		cfg.ServiceName = serviceName
 	}
 }
 
 // WithHost set host function
 func WithHost(host string) Option {
 	return func(cfg *config) {
-		cfg.host = host
+		cfg.Host = host
 	}
 }
 
 // WithPort set port function
 func WithPort(port int) Option {
 	return func(cfg *config) {
-		cfg.port = port
+		cfg.Port = port
 	}
 }
 
@@ -68,14 +68,14 @@ func WithMaxHeaderBytes(maxHeaderBytes int) Option {
 // WithLogger set logger function
 func WithLogger(logger glog.ILogger) Option {
 	return func(cfg *config) {
-		cfg.logger = logger
+		cfg.Logger = logger
 	}
 }
 
 // WithVersion set version function
 func WithVersion(version string) Option {
 	return func(cfg *config) {
-		cfg.version = version
+		cfg.Version = version
 	}
 }
 
