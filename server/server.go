@@ -134,6 +134,9 @@ func (s *Server) awaitSignal() {
 		if err := s.Stop(); err != nil {
 			s.options.logger.Error("stop http server error %s", err.Error())
 		}
+		if s.options.tracer != nil {
+			s.options.tracer.Stop(s.options.ctx)
+		}
 		os.Exit(0)
 	}
 }
@@ -163,12 +166,14 @@ func (s *Server) AddDiscovery(client discovery.Discovery) *Server {
 	return s
 }
 
-func (s *Server) AddTrace(tracer *tracer.Server) {
+func (s *Server) AddTrace(tracer *tracer.Server) *Server {
 	s.options.tracer = tracer
+	return s
 }
 
-func (s *Server) AddRouter(router *gin.Engine) {
+func (s *Server) AddRouter(router *gin.Engine) *Server {
 	s.options.router = router
+	return s
 }
 
 func (s *Server) Run() {
