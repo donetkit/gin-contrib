@@ -7,7 +7,7 @@ import (
 )
 
 func TestGetBuffer(t *testing.T) {
-	pool := &BufferPool{}
+	pool := &Pool{}
 	buf := pool.Get()
 	assert.NotEqual(t, nil, buf)
 	pool.Put(buf)
