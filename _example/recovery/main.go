@@ -11,7 +11,7 @@ import (
 
 func main() {
 	r := gin.New()
-	logger := glog.NewZapLogger()
+	logger := glog.New()
 	r.Use(recovery.New(logger, true))
 	// Example ping request.
 	r.GET("/ping", func(c *gin.Context) {
