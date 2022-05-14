@@ -2,7 +2,7 @@ package gintrace
 
 import (
 	"fmt"
-	"github.com/donetkit/gin-contrib/trace"
+	"github.com/donetkit/gin-contrib/tracer"
 	"github.com/gin-gonic/gin"
 	"regexp"
 
@@ -20,7 +20,7 @@ const (
 
 type RequestLabelMappingFn func(c *gin.Context) string
 
-// New returns middleware that will trace incoming requests.
+// New returns middleware that will tracer incoming requests.
 // The service parameter should describe the name of the (virtual)
 // server handling the request.
 func New(service string, opts ...Option) gin.HandlerFunc {
@@ -79,15 +79,15 @@ func New(service string, opts ...Option) gin.HandlerFunc {
 	}
 }
 
-// HTML will trace the rendering of the template as a child of the
+// HTML will tracer the rendering of the template as a child of the
 // span in the given context. This is a replacement for
 // gin.Context.HTML function - it invokes the original function after
 // setting up the span.
 func HTML(c *gin.Context, code int, name string, obj interface{}) {
-	var tracer trace.Server
+	var trace tracer.Server
 	tracerInterface, ok := c.Get(tracerKey)
 	if ok {
-		tracer, ok = tracerInterface.(trace.Server)
+		trace, ok = tracerInterface.(tracer.Server)
 	}
 	if !ok {
 		return
@@ -97,7 +97,7 @@ func HTML(c *gin.Context, code int, name string, obj interface{}) {
 		c.Request = c.Request.WithContext(savedContext)
 	}()
 	opt := oteltrace.WithAttributes(attribute.String("go.template", name))
-	_, span := tracer.Tracer.Start(savedContext, "gin.renderer.html", opt)
+	_, span := trace.Tracer.Start(savedContext, "gin.renderer.html", opt)
 	defer func() {
 		if r := recover(); r != nil {
 			err := fmt.Errorf("error rendering template:%s: %s", name, r)

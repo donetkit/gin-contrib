@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/donetkit/gin-contrib-log/glog"
 	"github.com/donetkit/gin-contrib/discovery"
+	"github.com/donetkit/gin-contrib/tracer"
 	"github.com/donetkit/gin-contrib/utils/console_colors"
 	"github.com/donetkit/gin-contrib/utils/files"
 	"github.com/donetkit/gin-contrib/utils/host"
@@ -19,6 +20,8 @@ import (
 )
 
 type config struct {
+	ctx             context.Context
+	tracer          *tracer.Server
 	logger          glog.ILogger
 	serviceName     string
 	host            string
@@ -41,6 +44,7 @@ type Server struct {
 
 func New(opts ...Option) (*Server, error) {
 	var cfg = &config{
+		ctx:            context.Background(),
 		serviceName:    "demo",
 		host:           host.GetOutBoundIp(),
 		port:           80,
@@ -157,6 +161,14 @@ func (s *Server) AddDiscovery(client discovery.Discovery) *Server {
 	}
 	s.options.clientDiscovery = client
 	return s
+}
+
+func (s *Server) AddTrace(tracer *tracer.Server) {
+	s.options.tracer = tracer
+}
+
+func (s *Server) AddRouter(router *gin.Engine) {
+	s.options.router = router
 }
 
 func (s *Server) Run() {

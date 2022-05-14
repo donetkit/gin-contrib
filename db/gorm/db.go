@@ -2,7 +2,7 @@ package gorm
 
 import (
 	"github.com/donetkit/gin-contrib-log/glog"
-	"github.com/donetkit/gin-contrib/trace"
+	"github.com/donetkit/gin-contrib/tracer"
 	"go.opentelemetry.io/otel/attribute"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -33,7 +33,7 @@ type sqlConfig struct {
 	ignoreRecordNotFoundError bool
 	slowThreshold             time.Duration
 	logger                    glog.ILogger
-	tracerServer              *trace.Server
+	tracerServer              *tracer.Server
 	attrs                     []attribute.KeyValue
 	excludeQueryVars          bool
 	excludeMetrics            bool

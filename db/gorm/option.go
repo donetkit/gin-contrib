@@ -2,7 +2,7 @@ package gorm
 
 import (
 	"github.com/donetkit/gin-contrib-log/glog"
-	"github.com/donetkit/gin-contrib/trace"
+	"github.com/donetkit/gin-contrib/tracer"
 	"go.opentelemetry.io/otel/attribute"
 	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
 	"time"
@@ -31,8 +31,8 @@ func WithIgnoreRecordNotFoundError(ignoreRecordNotFoundError bool) Option {
 	}
 }
 
-// WithTracer  tracerServer trace.Server
-func WithTracer(tracerServer *trace.Server) Option {
+// WithTracer  tracerServer tracer.Server
+func WithTracer(tracerServer *tracer.Server) Option {
 	return func(p *config) {
 		p.sqlConfig.tracerServer = tracerServer
 	}

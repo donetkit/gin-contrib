@@ -1,4 +1,4 @@
-package trace
+package tracer
 
 import (
 	"context"
@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	jaegerHeader        = "uber-trace-id"
+	jaegerHeader        = "uber-tracer-id"
 	separator           = ":"
 	traceID64bitsWidth  = 64 / 4
 	traceID128bitsWidth = 128 / 4
@@ -30,9 +30,9 @@ const (
 var (
 	empty = trace.SpanContext{}
 
-	errMalformedTraceContextVal = errors.New("header value of uber-trace-id should contain four different part separated by : ")
-	errInvalidTraceIDLength     = errors.New("invalid trace id length, must be either 16 or 32")
-	errMalformedTraceID         = errors.New("cannot decode trace id from header, should be a string of hex, lowercase trace id can't be all zero")
+	errMalformedTraceContextVal = errors.New("header value of uber-tracer-id should contain four different part separated by : ")
+	errInvalidTraceIDLength     = errors.New("invalid tracer id length, must be either 16 or 32")
+	errMalformedTraceID         = errors.New("cannot decode tracer id from header, should be a string of hex, lowercase tracer id can't be all zero")
 	errInvalidSpanIDLength      = errors.New("invalid span id length, must be 16")
 	errMalformedSpanID          = errors.New("cannot decode span id from header, should be a string of hex, lowercase span id can't be all zero")
 	errMalformedFlag            = errors.New("cannot decode flag")
@@ -42,7 +42,7 @@ var (
 //
 // Jaeger format:
 //
-// uber-trace-id: {trace-id}:{span-id}:{parent-span-id}:{flags}
+// uber-tracer-id: {tracer-id}:{span-id}:{parent-span-id}:{flags}
 type Jaeger struct{}
 
 var _ propagation.TextMapPropagator = &Jaeger{}
@@ -91,7 +91,7 @@ func extract(ctx context.Context, headerVal string) (context.Context, trace.Span
 		return ctx, empty, errMalformedTraceContextVal
 	}
 
-	// extract trace ID
+	// extract tracer ID
 	if parts[0] != "" {
 		id := parts[0]
 		if len(id) != traceID128bitsWidth && len(id) != traceID64bitsWidth {
@@ -137,7 +137,7 @@ func extract(ctx context.Context, headerVal string) (context.Context, trace.Span
 				scc.TraceFlags |= trace.FlagsSampled
 			}
 		}
-		// ignore other bit, including firehose since we don't have corresponding flag in trace context.
+		// ignore other bit, including firehose since we don't have corresponding flag in tracer context.
 	}
 	return ctx, trace.NewSpanContext(scc), nil
 }

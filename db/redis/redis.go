@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/donetkit/gin-contrib-log/glog"
-	tracerServer "github.com/donetkit/gin-contrib/trace"
+	tracerServer "github.com/donetkit/gin-contrib/tracer"
 	"github.com/go-redis/redis/v8"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -37,7 +37,7 @@ func (h *TracingHook) BeforeProcess(ctx context.Context, cmd redis.Cmder) (conte
 		return ctx, nil
 	}
 	opts := []trace.SpanStartOption{
-		//trace.WithSpanKind(trace.SpanKindClient),
+		//tracer.WithSpanKind(tracer.SpanKindClient),
 		trace.WithAttributes(h.attrs...),
 		trace.WithAttributes(
 			iconv.DBStatementKey.String(cmdName),
@@ -73,7 +73,7 @@ func (h *TracingHook) BeforeProcessPipeline(ctx context.Context, cmd []redis.Cmd
 	}
 	summary, _ := CmdsString(cmd)
 	opts := []trace.SpanStartOption{
-		//trace.WithSpanKind(trace.SpanKindClient),
+		//tracer.WithSpanKind(tracer.SpanKindClient),
 		trace.WithAttributes(h.attrs...),
 		trace.WithAttributes(
 			iconv.DBStatementKey.String(cmdName),

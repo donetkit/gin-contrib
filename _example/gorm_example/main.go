@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/donetkit/gin-contrib-log/glog"
 	"github.com/donetkit/gin-contrib/db/gorm"
-	"github.com/donetkit/gin-contrib/trace"
+	"github.com/donetkit/gin-contrib/tracer"
 )
 
 const (
@@ -15,11 +15,11 @@ const (
 func main() {
 	ctx := context.Background()
 	log := glog.New()
-	var traceServer *trace.Server
-	tp, err := trace.NewTracerProvider(service, "127.0.0.1", environment, 6831)
+	var traceServer *tracer.Server
+	tp, err := tracer.NewTracerProvider(service, "127.0.0.1", environment, 6831)
 	if err == nil {
-		jaeger := trace.Jaeger{}
-		traceServer = trace.New(service, trace.WithTracerProvider(tp), trace.WithPropagators(jaeger))
+		jaeger := tracer.Jaeger{}
+		traceServer = tracer.New(service, tracer.WithTracerProvider(tp), tracer.WithPropagators(jaeger))
 	}
 	var dns = map[string]string{}
 	dns["default"] = "root:test@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms"

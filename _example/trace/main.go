@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"github.com/donetkit/gin-contrib/middleware/gintrace"
-	"github.com/donetkit/gin-contrib/trace"
+	"github.com/donetkit/gin-contrib/tracer"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -17,10 +17,10 @@ const (
 func main() {
 	r := gin.New()
 
-	tp, err := trace.NewTracerProvider(service, "127.0.0.1", environment, 6831)
+	tp, err := tracer.NewTracerProvider(service, "127.0.0.1", environment, 6831)
 	if err == nil {
-		jaeger := trace.Jaeger{}
-		traceServer := trace.New(service, trace.WithTracerProvider(tp), trace.WithPropagators(jaeger))
+		jaeger := tracer.Jaeger{}
+		traceServer := tracer.New(service, tracer.WithTracerProvider(tp), tracer.WithPropagators(jaeger))
 		r.Use(gintrace.New(service, gintrace.WithTracer(traceServer)))
 		defer func() {
 			tp.Shutdown(context.Background())

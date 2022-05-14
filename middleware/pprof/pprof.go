@@ -39,7 +39,7 @@ func RouteRegister(rg *gin.RouterGroup, prefixOptions ...string) {
 		prefixRouter.GET("/profile", gin.WrapF(pprof.Profile))
 		prefixRouter.POST("/symbol", gin.WrapF(pprof.Symbol))
 		prefixRouter.GET("/symbol", gin.WrapF(pprof.Symbol))
-		prefixRouter.GET("/trace", gin.WrapF(pprof.Trace))
+		prefixRouter.GET("/tracer", gin.WrapF(pprof.Trace))
 		prefixRouter.GET("/allocs", gin.WrapH(pprof.Handler("allocs")))
 		prefixRouter.GET("/block", gin.WrapH(pprof.Handler("block")))
 		prefixRouter.GET("/goroutine", gin.WrapH(pprof.Handler("goroutine")))

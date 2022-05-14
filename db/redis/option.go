@@ -3,7 +3,7 @@ package redis
 import (
 	"context"
 	"github.com/donetkit/gin-contrib-log/glog"
-	"github.com/donetkit/gin-contrib/trace"
+	"github.com/donetkit/gin-contrib/tracer"
 	"go.opentelemetry.io/otel/attribute"
 	semconv "go.opentelemetry.io/otel/semconv/v1.10.0"
 )
@@ -11,7 +11,7 @@ import (
 type config struct {
 	ctx          context.Context
 	logger       glog.ILogger
-	tracerServer *trace.Server
+	tracerServer *tracer.Server
 	attrs        []attribute.KeyValue
 	addr         string
 	port         int
@@ -28,7 +28,7 @@ type Option func(p *config)
 
 // WithTracer specifies a tracer provider to use for creating a tracer.
 // If none is specified, the global provider is used.
-func WithTracer(tracerServer *trace.Server) Option {
+func WithTracer(tracerServer *tracer.Server) Option {
 	return func(cfg *config) {
 		if tracerServer != nil {
 			cfg.tracerServer = tracerServer

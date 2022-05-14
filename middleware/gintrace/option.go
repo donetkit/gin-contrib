@@ -1,11 +1,11 @@
 package gintrace
 
 import (
-	"github.com/donetkit/gin-contrib/trace"
+	"github.com/donetkit/gin-contrib/tracer"
 )
 
 type config struct {
-	tracerServer           *trace.Server
+	tracerServer           *tracer.Server
 	excludeRegexStatus     []string
 	excludeRegexEndpoint   []string
 	excludeRegexMethod     []string
@@ -23,8 +23,8 @@ func (o optionFunc) apply(c *config) {
 	o(c)
 }
 
-// WithTracer  tracerServer trace.Server
-func WithTracer(tracerServer *trace.Server) Option {
+// WithTracer  tracerServer tracer.Server
+func WithTracer(tracerServer *tracer.Server) Option {
 	return optionFunc(func(cfg *config) {
 		cfg.tracerServer = tracerServer
 	})
