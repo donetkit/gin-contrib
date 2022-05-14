@@ -21,4 +21,5 @@ func main() {
 		panic(err)
 	}
 	appServe.AddDiscovery(consulClient).Run()
+
 }
