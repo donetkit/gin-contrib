@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type Cache interface {
+type ICache interface {
 	Get(db int, key string, c ...context.Context) interface{}
 	GetString(db int, key string, c ...context.Context) (string, error)
 	Set(db int, key string, val interface{}, timeout time.Duration, c ...context.Context) error
