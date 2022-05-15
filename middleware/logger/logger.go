@@ -176,6 +176,7 @@ func New(opts ...Option) gin.HandlerFunc {
 		disableConsoleColor()
 	}
 	isTerm := true
+	//gin.DefaultWriter = &writeLogger{pool: buffer.Pool{}}
 	return func(c *gin.Context) {
 		if cfg.logger == nil {
 			return

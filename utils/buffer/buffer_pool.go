@@ -21,5 +21,6 @@ func (p *Pool) Get() *bytes.Buffer {
 
 // Put a bytes.Buffer pointer to BufferPool
 func (p *Pool) Put(buf *bytes.Buffer) {
+	buf.Reset()
 	p.pool.Put(buf)
 }
