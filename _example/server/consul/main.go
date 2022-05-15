@@ -16,7 +16,7 @@ func main() {
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong "+fmt.Sprint(time.Now().Unix()))
 	})
-	appServe, err := server.New(server.WithRouter(r))
+	appServe, err := server.New(server.WithHandler(r))
 	if err != nil {
 		panic(err)
 	}
