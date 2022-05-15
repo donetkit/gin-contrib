@@ -9,7 +9,6 @@ import (
 	"github.com/donetkit/gin-contrib/utils/console_colors"
 	"github.com/donetkit/gin-contrib/utils/files"
 	"github.com/donetkit/gin-contrib/utils/host"
-	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"net/http"
 	"os"
@@ -26,7 +25,7 @@ type config struct {
 	ServiceName     string
 	Host            string
 	Port            int
-	router          *gin.Engine
+	handler         http.Handler
 	httpServer      http.Server
 	clientDiscovery discovery.Discovery
 	readTimeout     time.Duration
@@ -62,16 +61,6 @@ func New(opts ...Option) (*Server, error) {
 	}
 	server := &Server{
 		Options: cfg,
-	}
-	if cfg.router != nil {
-		switch server.Options.environment {
-		case Dev:
-			gin.SetMode(gin.DebugMode)
-		case Test:
-			gin.SetMode(gin.TestMode)
-		case Prod:
-			gin.SetMode(gin.ReleaseMode)
-		}
 	}
 	return server, nil
 }
@@ -171,8 +160,8 @@ func (s *Server) AddTrace(tracer *tracer.Server) *Server {
 	return s
 }
 
-func (s *Server) AddRouter(router *gin.Engine) *Server {
-	s.Options.router = router
+func (s *Server) AddHandler(handler http.Handler) *Server {
+	s.Options.handler = handler
 	return s
 }
 
@@ -180,7 +169,7 @@ func (s *Server) Run() {
 	addr := fmt.Sprintf("%s:%d", s.Options.Host, s.Options.Port)
 	s.Options.httpServer = http.Server{
 		Addr:           addr,
-		Handler:        s.Options.router,
+		Handler:        s.Options.handler,
 		ReadTimeout:    s.Options.readTimeout,
 		WriteTimeout:   s.Options.writerTimeout,
 		MaxHeaderBytes: s.Options.maxHeaderBytes,

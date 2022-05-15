@@ -2,7 +2,7 @@ package server
 
 import (
 	"github.com/donetkit/gin-contrib-log/glog"
-	"github.com/gin-gonic/gin"
+	"net/http"
 	"time"
 )
 
@@ -30,19 +30,19 @@ func WithPort(port int) Option {
 	}
 }
 
-// WithRouter set router function
-func WithRouter(router *gin.Engine) Option {
+// WithHandler set handler function
+func WithHandler(handler http.Handler) Option {
 	return func(cfg *config) {
-		cfg.router = router
+		cfg.handler = handler
 	}
 }
 
-// WithHttpServer set httpServer function
-//func WithHttpServer(httpServer http.Server) Option {
-//	return func(cfg *config) {
-//		cfg.httpServer = httpServer
-//	}
-//}
+//WithHttpServer set httpServer function
+func WithHttpServer(httpServer http.Server) Option {
+	return func(cfg *config) {
+		cfg.httpServer = httpServer
+	}
+}
 
 // WithReadTimeout set readTimeout function
 func WithReadTimeout(readTimeout time.Duration) Option {
