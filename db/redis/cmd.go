@@ -17,7 +17,6 @@ func (c *Cache) WithDB(db int) cache.ICache {
 		client = allClient[db]
 	}
 	return &Cache{
-		init:     true,
 		ctxCache: c.config.ctx,
 		client:   client,
 		config:   c.config,

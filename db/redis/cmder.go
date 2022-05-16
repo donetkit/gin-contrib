@@ -146,3 +146,39 @@ func isSimple(b []byte) bool {
 func isSimpleByte(c byte) bool {
 	return c >= 0x21 && c <= 0x7e
 }
+
+func tracerCmdsString(cms []redis.Cmder) []string {
+	const numCmdLimit = 100
+	const numNameLimit = 10
+	seen := make(map[string]struct{}, numNameLimit)
+	unqNames := make([]string, 0, numNameLimit)
+	b := make([]byte, 0, 32*len(cms))
+	for i, cmd := range cms {
+		if i > numCmdLimit {
+			break
+		}
+		if i > 0 {
+			b = append(b, '\n')
+		}
+		b = AppendCmd(b, cmd)
+
+		if len(unqNames) >= numNameLimit {
+			continue
+		}
+
+		name := cmd.FullName()
+		if _, ok := seen[name]; !ok {
+			seen[name] = struct{}{}
+			unqNames = append(unqNames, name)
+		}
+	}
+	summary := strings.Join(unqNames, " ")
+	result := []string{summary, strings.String(b)}
+	return result
+}
+
+func tracerCmdString(cmd redis.Cmder) string {
+	b := make([]byte, 0, 32)
+	b = AppendCmd(b, cmd)
+	return strings.String(b)
+}

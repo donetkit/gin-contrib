@@ -120,7 +120,7 @@ func getTraceFullName(cmd redis.Cmder) string {
 			return fmt.Sprintf("db:redis:%s", name)
 		}
 		if s2, ok := args[1].(string); ok {
-			return fmt.Sprintf("db:redis:%s:%s", name, s2)
+			return fmt.Sprintf("db:redis:%s => %s", name, s2)
 		}
 		return name
 	default:
@@ -128,7 +128,7 @@ func getTraceFullName(cmd redis.Cmder) string {
 			return name
 		}
 		if s2, ok := args[1].(string); ok {
-			return fmt.Sprintf("db:redis:%s:%s", name, s2)
+			return fmt.Sprintf("db:redis:%s => %s", name, s2)
 		}
 		return name
 	}

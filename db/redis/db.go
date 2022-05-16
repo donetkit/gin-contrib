@@ -8,18 +8,10 @@ import (
 
 var allClient []*redis.Client
 
-//type Client struct {
-//	ctxCache context.Context
-//	Client   []*redis.Client
-//	client   redis.Client
-//	config   *config
-//}
-
 type Cache struct {
 	ctxCache context.Context
 	client   *redis.Client
 	config   *config
-	init     bool
 }
 
 func New(opts ...Option) *Cache {
