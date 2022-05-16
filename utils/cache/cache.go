@@ -5,12 +5,10 @@ import (
 	"time"
 )
 
-type UnexportedInterface interface {
-	//Save(io.Writer) error
-	//SaveFile(string) error
-	//Load(io.Reader) error
-	//LoadFile(string) error
-}
+//Save(io.Writer) error
+//SaveFile(string) error
+//Load(io.Reader) error
+//LoadFile(string) error
 
 type ICache interface {
 	WithDB(db int) ICache
@@ -32,5 +30,19 @@ type ICache interface {
 	IncrementFloat(string, float64) (float64, error)
 	Decrement(string, int64) (int64, error)
 
+	Flush()
+}
+
+type IShortCache interface {
+	WithDB(db int) ICache
+	WithContext(ctx context.Context) ICache
+	Get(string) interface{}
+	GetString(string) (string, error)
+	Set(string, interface{}, time.Duration) error
+	IsExist(string) bool
+	Delete(string) (int64, error)
+	Increment(string, int64) (int64, error)
+	IncrementFloat(string, float64) (float64, error)
+	Decrement(string, int64) (int64, error)
 	Flush()
 }
