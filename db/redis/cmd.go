@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/donetkit/gin-contrib/utils/cache"
 	"github.com/donetkit/gin-contrib/utils/uuid"
-
 	//"github.com/donetkit/gin-contrib/utils/uuid"
 	"github.com/go-redis/redis/v8"
 	"time"
@@ -38,12 +37,11 @@ func (c *Cache) Get(key string) interface{} {
 	if err != nil {
 		return nil
 	}
-	return data
-	//var reply interface{}
-	//if err = json.Unmarshal(data, &reply); err != nil {
-	//	return nil
-	//}
-	//return reply
+	var reply interface{}
+	if err = json.Unmarshal(data, &reply); err != nil {
+		return nil
+	}
+	return reply
 }
 
 func (c *Cache) GetString(key string) (string, error) {
