@@ -2,21 +2,35 @@ package cache
 
 import (
 	"context"
-	"github.com/go-redis/redis/v8"
 	"time"
 )
 
+type UnexportedInterface interface {
+	//Save(io.Writer) error
+	//SaveFile(string) error
+	//Load(io.Reader) error
+	//LoadFile(string) error
+}
+
 type ICache interface {
-	Get(db int, key string, c ...context.Context) interface{}
-	GetString(db int, key string, c ...context.Context) (string, error)
-	Set(db int, key string, val interface{}, timeout time.Duration, c ...context.Context) error
-	IsExist(db int, key string, c ...context.Context) bool
-	Delete(db int, key string, c ...context.Context) (int64, error)
-	LPush(db int, key string, values interface{}, c ...context.Context) (int64, error)
-	RPop(db int, key string, c ...context.Context) interface{}
-	XRead(db int, key string, count int64, c ...context.Context) ([]redis.XStream, error)
-	XAdd(db int, key, id string, values []string, c ...context.Context) (string, error)
-	XDel(db int, key string, id string, c ...context.Context) (int64, error)
-	GetLock(db int, lockName string, acquireTimeout, lockTimeOut time.Duration, c ...context.Context) (string, error)
-	ReleaseLock(db int, lockName, code string, c ...context.Context) bool
+	WithDB(db int) ICache
+	WithContext(ctx context.Context) ICache
+	Get(string) interface{}
+	GetString(string) (string, error)
+	Set(string, interface{}, time.Duration) error
+	IsExist(string) bool
+	Delete(string) (int64, error)
+	LPush(string, interface{}) (int64, error)
+	RPop(string) interface{}
+	XRead(string, int64) (interface{}, error) // default type []redis.XStream
+	XAdd(string, string, []string) (string, error)
+	XDel(string, string) (int64, error)
+	GetLock(string, time.Duration, time.Duration) (string, error)
+	ReleaseLock(string, string) bool
+
+	Increment(string, int64) (int64, error)
+	IncrementFloat(string, float64) (float64, error)
+	Decrement(string, int64) (int64, error)
+
+	Flush()
 }
