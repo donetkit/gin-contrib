@@ -24,7 +24,7 @@ func main() {
 		traceServer = tracer.New(service, tracer.WithTracerProvider(tp), tracer.WithPropagators(jaeger))
 	}
 
-	rdb := redisRedis.New(redisRedis.WithLogger(log), redisRedis.WithTracer(traceServer), redisRedis.WithAddr("127.0.0.1"), redisRedis.WithPort(6379), redisRedis.WithPassword("test"), redisRedis.WithDB(0))
+	rdb := redisRedis.New(redisRedis.WithLogger(log), redisRedis.WithTracer(traceServer), redisRedis.WithAddr("127.0.0.1"), redisRedis.WithPassword("test"), redisRedis.WithDB(0))
 	if err := redisCommands(ctx, traceServer, rdb); err != nil {
 		log.Error(err.Error())
 		return
