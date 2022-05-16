@@ -6,12 +6,22 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-type Client struct {
-	Client []*redis.Client
-	config *config
+var allClient []*redis.Client
+
+//type Client struct {
+//	ctxCache context.Context
+//	Client   []*redis.Client
+//	client   redis.Client
+//	config   *config
+//}
+
+type Cache struct {
+	ctxCache context.Context
+	client   redis.Client
+	config   *config
 }
 
-func New(opts ...Option) *Client {
+func New(opts ...Option) *Cache {
 	c := &config{
 		ctx:      context.TODO(),
 		addr:     "127.0.0.1",
@@ -22,7 +32,8 @@ func New(opts ...Option) *Client {
 	for _, opt := range opts {
 		opt(c)
 	}
-	return &Client{Client: c.newRedisClient(), config: c}
+	allClient = c.newRedisClient()
+	return &Cache{config: c}
 }
 
 func (c *config) newRedisClient() []*redis.Client {
