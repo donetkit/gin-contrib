@@ -10,6 +10,8 @@ type config struct {
 	excludeRegexEndpoint   []string
 	excludeRegexMethod     []string
 	endpointLabelMappingFn RequestLabelMappingFn
+	writerTraceId          bool
+	writerSpanId           bool
 }
 
 // Option specifies instrumentation configuration options.
@@ -55,5 +57,19 @@ func WithExcludeRegexEndpoint(excludeRegexEndpoint []string) Option {
 func WithEndpointLabelMappingFn(endpointLabelMappingFn RequestLabelMappingFn) Option {
 	return optionFunc(func(cfg *config) {
 		cfg.endpointLabelMappingFn = endpointLabelMappingFn
+	})
+}
+
+// WithWriterTraceId set writerTraceId function
+func WithWriterTraceId(writerTraceId bool) Option {
+	return optionFunc(func(cfg *config) {
+		cfg.writerTraceId = writerTraceId
+	})
+}
+
+// WithWriterSpanId set writerSpanId function
+func WithWriterSpanId(writerSpanId bool) Option {
+	return optionFunc(func(cfg *config) {
+		cfg.writerSpanId = writerSpanId
 	})
 }

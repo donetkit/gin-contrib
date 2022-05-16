@@ -25,6 +25,7 @@ type RequestLabelMappingFn func(c *gin.Context) string
 // server handling the request.
 func New(service string, opts ...Option) gin.HandlerFunc {
 	cfg := config{
+		writerTraceId: true,
 		endpointLabelMappingFn: func(c *gin.Context) string {
 			return c.Request.URL.Path
 		}}
@@ -61,6 +62,14 @@ func New(service string, opts ...Option) gin.HandlerFunc {
 		}
 		ctx, span := cfg.tracerServer.Tracer.Start(ctx, spanName, opts...)
 		defer span.End()
+
+		// header写入trace-id和span-id
+		if cfg.writerTraceId {
+			c.Writer.Header().Set("trace-id", span.SpanContext().TraceID().String())
+		}
+		if cfg.writerSpanId {
+			c.Writer.Header().Set("span-id", span.SpanContext().SpanID().String())
+		}
 
 		// pass the span through the request context
 		c.Request = c.Request.WithContext(ctx)
