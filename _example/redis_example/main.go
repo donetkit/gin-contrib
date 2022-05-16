@@ -6,7 +6,6 @@ import (
 	redisRedis "github.com/donetkit/gin-contrib/db/redis"
 	"github.com/donetkit/gin-contrib/tracer"
 	"github.com/donetkit/gin-contrib/utils/cache"
-	"time"
 )
 
 const (
@@ -30,17 +29,15 @@ func main() {
 		log.Error(err.Error())
 		return
 	}
-	log.Info("111111111111111")
-	time.Sleep(time.Second * 31)
 	//fmt.Println("tracer", otelplay.TraceURL(span))
 }
 func redisCommands(ctx context.Context, traceServer *tracer.Server, rdb cache.ICache) error {
-	ctx, span := traceServer.Tracer.Start(ctx, "11111111111111111111111")
+	ctx, span := traceServer.Tracer.Start(ctx, "cache")
 	defer span.End()
-	if err := rdb.Set(0, "foo", "bar", 0, ctx); err != nil {
+	if err := rdb.WithDB(0).WithContext(ctx).Set("foo", "bar", 0); err != nil {
 		return err
 	}
-	rdb.Get(0, "foo", ctx)
+	rdb.WithDB(0).WithContext(ctx).Get("foo")
 
 	return nil
 }

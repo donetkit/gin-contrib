@@ -12,11 +12,12 @@ import (
 )
 
 func (c *Cache) WithDB(db int) cache.ICache {
-	client := *allClient[0]
+	client := allClient[0]
 	if db >= 0 && db <= 15 {
-		client = *allClient[db]
+		client = allClient[db]
 	}
 	return &Cache{
+		init:     true,
 		ctxCache: c.config.ctx,
 		client:   client,
 		config:   c.config,
