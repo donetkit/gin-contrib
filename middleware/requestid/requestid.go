@@ -7,6 +7,8 @@ import (
 
 var headerXRequestID string
 
+var headerRequestIdKey = "X-Request-Id"
+
 // Config defines the config for RequestID middleware
 type config struct {
 	// Generator defines a function to generate an ID.
@@ -14,31 +16,29 @@ type config struct {
 	//   return uuid.New().String()
 	// }
 	generator Generator
-	headerKey HeaderStrKey
+	headerKey string
 }
 
 // New initializes the RequestID middleware.
 func New(opts ...Option) gin.HandlerFunc {
 	cfg := &config{
 		generator: func() string {
-			return uuid.New()
+			return uuid.NewUUID()
 		},
-		headerKey: "X-Request-ID",
+		headerKey: headerRequestIdKey,
 	}
-
 	for _, opt := range opts {
 		opt(cfg)
 	}
-
+	headerXRequestID = cfg.headerKey
 	return func(c *gin.Context) {
 		// Get id from request
-		rid := c.GetHeader(string(cfg.headerKey))
+		rid := c.GetHeader(cfg.headerKey)
 		if rid == "" {
 			rid = cfg.generator()
 		}
-		headerXRequestID = string(cfg.headerKey)
 		// Set the id to ensure that the requestid is in the response
-		c.Header(headerXRequestID, rid)
+		c.Header(cfg.headerKey, rid)
 		c.Next()
 	}
 }

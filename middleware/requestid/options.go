@@ -5,8 +5,6 @@ type Option func(*config)
 
 type Generator func() string
 
-type HeaderStrKey string
-
 // WithGenerator set generator function
 func WithGenerator(g Generator) Option {
 	return func(cfg *config) {
@@ -14,8 +12,8 @@ func WithGenerator(g Generator) Option {
 	}
 }
 
-// WithCustomeHeaderStrKey set custom header key for request id
-func WithCustomHeaderStrKey(s HeaderStrKey) Option {
+// WithCustomHeaderStrKey set custom header key for request id
+func WithCustomHeaderStrKey(s string) Option {
 	return func(cfg *config) {
 		cfg.headerKey = s
 	}
