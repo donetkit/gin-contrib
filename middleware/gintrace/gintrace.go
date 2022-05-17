@@ -23,9 +23,11 @@ type RequestLabelMappingFn func(c *gin.Context) string
 // New returns middleware that will tracer incoming requests.
 // The service parameter should describe the name of the (virtual)
 // server handling the request.
-func New(service string, opts ...Option) gin.HandlerFunc {
+func New(opts ...Option) gin.HandlerFunc {
 	cfg := config{
-		writerTraceId: true,
+		tracerName: "Service",
+		traceIdKey: "trace-id",
+		spanIdKey:  "span-id",
 		endpointLabelMappingFn: func(c *gin.Context) string {
 			return c.Request.URL.Path
 		}}
@@ -53,7 +55,7 @@ func New(service string, opts ...Option) gin.HandlerFunc {
 		opts := []oteltrace.SpanStartOption{
 			oteltrace.WithAttributes(semconv.NetAttributesFromHTTPRequest("tcp", c.Request)...),
 			oteltrace.WithAttributes(semconv.EndUserAttributesFromHTTPRequest(c.Request)...),
-			oteltrace.WithAttributes(semconv.HTTPServerAttributesFromHTTPRequest(service, c.FullPath(), c.Request)...),
+			oteltrace.WithAttributes(semconv.HTTPServerAttributesFromHTTPRequest(cfg.tracerName, c.FullPath(), c.Request)...),
 			oteltrace.WithSpanKind(oteltrace.SpanKindServer),
 		}
 		spanName := c.FullPath()
@@ -65,15 +67,13 @@ func New(service string, opts ...Option) gin.HandlerFunc {
 
 		// header写入trace-id和span-id
 		if cfg.writerTraceId {
-			c.Writer.Header().Set("trace-id", span.SpanContext().TraceID().String())
+			c.Header(cfg.traceIdKey, span.SpanContext().TraceID().String())
 		}
 		if cfg.writerSpanId {
-			c.Writer.Header().Set("span-id", span.SpanContext().SpanID().String())
+			c.Header(cfg.spanIdKey, span.SpanContext().SpanID().String())
 		}
-
 		// pass the span through the request context
 		c.Request = c.Request.WithContext(ctx)
-
 		// serve the request to the next middleware
 		c.Next()
 

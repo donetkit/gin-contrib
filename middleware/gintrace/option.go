@@ -5,6 +5,7 @@ import (
 )
 
 type config struct {
+	tracerName             string
 	tracerServer           *tracer.Server
 	excludeRegexStatus     []string
 	excludeRegexEndpoint   []string
@@ -12,6 +13,8 @@ type config struct {
 	endpointLabelMappingFn RequestLabelMappingFn
 	writerTraceId          bool
 	writerSpanId           bool
+	traceIdKey             string
+	spanIdKey              string
 }
 
 // Option specifies instrumentation configuration options.
@@ -71,5 +74,26 @@ func WithWriterTraceId(writerTraceId bool) Option {
 func WithWriterSpanId(writerSpanId bool) Option {
 	return optionFunc(func(cfg *config) {
 		cfg.writerSpanId = writerSpanId
+	})
+}
+
+// WithTracerName  tracerName default Service
+func WithTracerName(tracerName string) Option {
+	return optionFunc(func(cfg *config) {
+		cfg.tracerName = tracerName
+	})
+}
+
+// WithTraceIdKey  traceIdKey default trace-id
+func WithTraceIdKey(traceIdKey string) Option {
+	return optionFunc(func(cfg *config) {
+		cfg.traceIdKey = traceIdKey
+	})
+}
+
+// WithSpanIdKey  spanIdKey default span-id
+func WithSpanIdKey(spanIdKey string) Option {
+	return optionFunc(func(cfg *config) {
+		cfg.spanIdKey = spanIdKey
 	})
 }
