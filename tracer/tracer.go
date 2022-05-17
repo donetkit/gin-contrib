@@ -10,8 +10,10 @@ import (
 // New returns middleware that will tracer incoming requests.
 // The service parameter should describe the name of the (virtual)
 // server handling the request.
-func New(tracerName string, opts ...Option) *Server {
-	cfg := &Server{}
+func New(opts ...Option) *Server {
+	cfg := &Server{
+		tracerName: "Service",
+	}
 	for _, opt := range opts {
 		opt.apply(cfg)
 	}
@@ -19,7 +21,7 @@ func New(tracerName string, opts ...Option) *Server {
 		cfg.TracerProvider = otel.GetTracerProvider()
 	}
 	cfg.Tracer = cfg.TracerProvider.Tracer(
-		tracerName,
+		cfg.tracerName,
 		ltrace.WithInstrumentationVersion(SemVersion()),
 	)
 	if cfg.Propagators == nil {

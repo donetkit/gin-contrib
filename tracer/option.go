@@ -6,6 +6,7 @@ import (
 )
 
 type Server struct {
+	tracerName     string
 	Tracer         oteltrace.Tracer
 	TracerProvider oteltrace.TracerProvider
 	Propagators    propagation.TextMapPropagator
@@ -40,5 +41,12 @@ func WithTracerProvider(provider oteltrace.TracerProvider) Option {
 		if provider != nil {
 			cfg.TracerProvider = provider
 		}
+	})
+}
+
+// WithTracerName tracerName default Service
+func WithTracerName(tracerName string) Option {
+	return optionFunc(func(cfg *Server) {
+		cfg.tracerName = tracerName
 	})
 }
