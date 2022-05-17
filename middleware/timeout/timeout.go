@@ -1,7 +1,7 @@
 package timeout
 
 import (
-	"github.com/donetkit/gin-contrib/utils/buffer"
+	"github.com/donetkit/contrib/utils/buffer"
 	"time"
 
 	"github.com/gin-gonic/gin"

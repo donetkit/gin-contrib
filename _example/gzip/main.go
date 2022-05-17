@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/donetkit/contrib-gin/middleware/gzip"
+	"github.com/donetkit/contrib-gin/middleware/logger"
 	"github.com/donetkit/contrib-log/glog"
-	"github.com/donetkit/gin-contrib/middleware/gzip"
-	"github.com/donetkit/gin-contrib/middleware/logger"
 	"net/http"
 	"time"
 

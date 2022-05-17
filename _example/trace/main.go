@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"github.com/donetkit/gin-contrib/middleware/gintrace"
-	"github.com/donetkit/gin-contrib/tracer"
+	"github.com/donetkit/contrib-gin/middleware/gintrace"
+	"github.com/donetkit/contrib/tracer"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"

@@ -2,7 +2,7 @@ package cache
 
 import (
 	"github.com/donetkit/contrib-log/glog"
-	"github.com/donetkit/gin-contrib/utils/cache"
+	"github.com/donetkit/contrib/utils/cache"
 )
 
 type option struct {

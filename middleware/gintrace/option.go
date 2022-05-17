@@ -1,7 +1,7 @@
 package gintrace
 
 import (
-	"github.com/donetkit/gin-contrib/tracer"
+	"github.com/donetkit/contrib/tracer"
 )
 
 type config struct {

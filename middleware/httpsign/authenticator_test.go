@@ -3,8 +3,8 @@ package httpsign
 import (
 	"context"
 	"fmt"
-	"github.com/donetkit/gin-contrib/middleware/httpsign/crypto"
-	validator2 "github.com/donetkit/gin-contrib/middleware/httpsign/validator"
+	"github.com/donetkit/contrib-gin/middleware/httpsign/crypto"
+	"github.com/donetkit/contrib-gin/middleware/httpsign/validator"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -51,7 +51,7 @@ var (
 	requestTime     = time.Date(2018, time.October, 22, 0o7, 0o0, 0o7, 0o0, time.UTC)
 )
 
-func runTest(secretKeys Secrets, headers []string, v []validator2.Validator, req *http.Request) *gin.Context {
+func runTest(secretKeys Secrets, headers []string, v []validator.Validator, req *http.Request) *gin.Context {
 	gin.SetMode(gin.TestMode)
 	auth := NewAuthenticator(secretKeys, WithRequiredHeaders(headers), WithValidator(v...))
 	c, _ := gin.CreateTestContext(httptest.NewRecorder())
@@ -103,7 +103,7 @@ func TestAuthenticateDateNotAccept(t *testing.T) {
 	req.Header.Set("Date", time.Date(1990, time.October, 20, 0, 0, 0, 0, time.UTC).Format(http.TimeFormat))
 	c := runTest(secrets, requiredHeaders, nil, req)
 	assert.Equal(t, http.StatusBadRequest, c.Writer.Status())
-	assert.Equal(t, validator2.ErrDateNotInRange, c.Errors[0])
+	assert.Equal(t, validator.ErrDateNotInRange, c.Errors[0])
 }
 
 func TestAuthenticateInvalidRequiredHeader(t *testing.T) {
@@ -149,9 +149,9 @@ type dateAlwaysValid struct{}
 
 func (v *dateAlwaysValid) Validate(r *http.Request) error { return nil }
 
-var mockValidator = []validator2.Validator{
+var mockValidator = []validator.Validator{
 	&dateAlwaysValid{},
-	validator2.NewDigestValidator(),
+	validator.NewDigestValidator(),
 }
 
 func httpTestGet(c *gin.Context) {

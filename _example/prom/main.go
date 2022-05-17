@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/donetkit/gin-contrib/middleware/prom"
+	"github.com/donetkit/contrib-gin/middleware/prom"
 	"github.com/gin-gonic/gin"
 	"log"
 )

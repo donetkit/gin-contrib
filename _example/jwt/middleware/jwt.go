@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/donetkit/gin-contrib/middleware/jwt"
+	"github.com/donetkit/contrib-gin/middleware/jwt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"time"

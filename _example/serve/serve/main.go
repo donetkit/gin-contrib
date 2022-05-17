@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"github.com/donetkit/contrib-gin/middleware/logger"
 	"github.com/donetkit/contrib-log/glog"
-	logger2 "github.com/donetkit/gin-contrib/middleware/logger"
-	"github.com/donetkit/gin-contrib/server/webserve"
+	"github.com/donetkit/contrib/server/webserve"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -13,7 +13,7 @@ import (
 func main() {
 	logs := glog.New()
 	r := gin.New()
-	r.Use(logger2.New(logger2.WithLogger(logs)))
+	r.Use(logger.New(logger.WithLogger(logs)))
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong "+fmt.Sprint(time.Now().Unix()))
 	})

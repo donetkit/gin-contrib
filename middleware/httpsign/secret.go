@@ -1,7 +1,7 @@
 package httpsign
 
 import (
-	"github.com/donetkit/gin-contrib/middleware/httpsign/crypto"
+	"github.com/donetkit/contrib-gin/middleware/httpsign/crypto"
 )
 
 // KeyID define type

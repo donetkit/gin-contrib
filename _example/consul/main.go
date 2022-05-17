@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/donetkit/gin-contrib/discovery"
-	"github.com/donetkit/gin-contrib/discovery/consul"
+	"github.com/donetkit/contrib/discovery"
+	"github.com/donetkit/contrib/discovery/consul"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -12,7 +12,10 @@ import (
 
 func main() {
 	r := gin.New()
-	consulClient, _ := consul.New(discovery.WithServiceRegisterAddr("127.0.0.1"))
+	consulClient, _ := consul.New(
+		discovery.WithServiceRegisterAddr("127.0.0.1"),
+		discovery.WithServiceRegisterPort(8500),
+		discovery.WithCheckHTTP(func(url string) { r.GET(url, func(c *gin.Context) { c.String(200, "Healthy") }) }))
 	// Example ping request.
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong "+fmt.Sprint(time.Now().Unix()))

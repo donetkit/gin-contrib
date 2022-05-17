@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/donetkit/gin-contrib/middleware/timeout"
+	"github.com/donetkit/contrib-gin/middleware/timeout"
 	"log"
 	"net/http"
 	"time"

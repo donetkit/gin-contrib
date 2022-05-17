@@ -2,7 +2,7 @@ package gintrace
 
 import (
 	"fmt"
-	"github.com/donetkit/gin-contrib/tracer"
+	"github.com/donetkit/contrib/tracer"
 	"github.com/gin-gonic/gin"
 	"regexp"
 

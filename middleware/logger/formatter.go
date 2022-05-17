@@ -2,7 +2,7 @@ package logger
 
 import (
 	"github.com/donetkit/contrib-log/glog"
-	"github.com/donetkit/gin-contrib/utils/buffer"
+	"github.com/donetkit/contrib/utils/buffer"
 	"github.com/gin-gonic/gin"
 	"strings"
 )

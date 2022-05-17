@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	requestid2 "github.com/donetkit/gin-contrib/middleware/requestid"
+	"github.com/donetkit/contrib-gin/middleware/requestid"
 	"log"
 	"net/http"
 	"time"
@@ -14,11 +14,11 @@ func main() {
 	r := gin.New()
 
 	r.Use(
-		requestid2.New(
-			requestid2.WithGenerator(func() string {
+		requestid.New(
+			requestid.WithGenerator(func() string {
 				return "test"
 			}),
-			requestid2.WithCustomHeaderStrKey("your-customer-key"),
+			requestid.WithCustomHeaderStrKey("your-customer-key"),
 		),
 	)
 
@@ -29,7 +29,7 @@ func main() {
 
 	// Example / request.
 	r.GET("/", func(c *gin.Context) {
-		c.String(http.StatusOK, "id:"+requestid2.Get(c))
+		c.String(http.StatusOK, "id:"+requestid.Get(c))
 	})
 
 	// Listen and Server in 0.0.0.0:8080

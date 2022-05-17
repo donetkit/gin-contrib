@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/donetkit/gin-contrib/middleware/size"
+	limits "github.com/donetkit/contrib-gin/middleware/size"
 	"log"
 	"net/http"
 

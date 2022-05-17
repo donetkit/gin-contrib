@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"crypto/sha1"
 	"errors"
-	"github.com/donetkit/gin-contrib/utils/cache"
+	"github.com/donetkit/contrib/utils/cache"
 	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"

@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/donetkit/contrib-gin/middleware/recovery"
 	"github.com/donetkit/contrib-log/glog"
-	"github.com/donetkit/gin-contrib/middleware/recovery"
 	"time"
 
 	"github.com/gin-gonic/gin"

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/donetkit/gin-contrib/middleware/favicon"
+	"github.com/donetkit/contrib-gin/middleware/favicon"
 	"github.com/gin-gonic/gin"
 )
 
