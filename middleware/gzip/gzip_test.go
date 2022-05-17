@@ -45,7 +45,7 @@ func (c *closeNotifyingRecorder) CloseNotify() <-chan bool {
 }
 
 func newServer() *gin.Engine {
-	// init reverse proxy server
+	// init reverse proxy webserve
 	rServer := httptest.NewServer(new(rServer))
 	target, _ := url.Parse(rServer.URL)
 	rp := httputil.NewSingleHostReverseProxy(target)

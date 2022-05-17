@@ -109,7 +109,7 @@ func (a *Authenticator) Authenticated() gin.HandlerFunc {
 	}
 }
 
-// isValidHeader check if all server required header is in header list
+// isValidHeader check if all webserve required header is in header list
 func (a *Authenticator) isValidHeader(headers []string) bool {
 	m := len(headers)
 	for _, h := range a.headers {

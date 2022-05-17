@@ -165,7 +165,7 @@ func (fs *AssetFS) Open(name string) (http.File, error) {
 		}
 
 		// If the error is not found, return an error that will
-		// result in a 404 error. Otherwise the server returns
+		// result in a 404 error. Otherwise the webserve returns
 		// a 500 error for files not found.
 		if strings.Contains(err.Error(), "not found") {
 			return nil, os.ErrNotExist

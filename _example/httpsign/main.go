@@ -25,7 +25,7 @@ func main() {
 		},
 	}
 
-	// Init server
+	// Init webserve
 	r := gin.Default()
 
 	//Create middleware with default rule. Could modify by parse Option func

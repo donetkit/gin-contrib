@@ -38,11 +38,11 @@ type LogFormatter func(params LogFormatterParams) string
 type LogFormatterParams struct {
 	Request *http.Request
 
-	// TimeStamp shows the time after the server returns a response.
+	// TimeStamp shows the time after the webserve returns a response.
 	TimeStamp time.Time
 	// StatusCode is HTTP response code.
 	StatusCode int
-	// Latency is how much time the server cost to process a certain request.
+	// Latency is how much time the webserve cost to process a certain request.
 	Latency time.Duration
 	// ClientIP equals Context's ClientIP method.
 	ClientIP string
@@ -131,12 +131,12 @@ var defaultLogFormatter = func(param LogFormatterParams) string {
 	)
 }
 
-// disableConsoleColor disables color output in the console.
+// disableConsoleColor disables color output in the consoleserve.
 func disableConsoleColor() {
 	consoleColorMode = disableColor
 }
 
-// forceConsoleColor force color output in the console.
+// forceConsoleColor force color output in the consoleserve.
 func forceConsoleColor() {
 	consoleColorMode = forceColor
 }

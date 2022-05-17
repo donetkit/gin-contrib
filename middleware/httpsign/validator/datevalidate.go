@@ -24,7 +24,7 @@ var ErrDateNotInRange = newPublicError("Date submit is not in aceptable range")
 // DateValidator checking validate by time range
 type DateValidator struct {
 	// TimeGap is max time different between client submit timestamp
-	// and server time that considered valid. The time precision is millisecond.
+	// and webserve time that considered valid. The time precision is millisecond.
 	TimeGap time.Duration
 }
 

@@ -1,7 +1,7 @@
-package server
+package webserve
 
 import (
-	"github.com/donetkit/gin-contrib-log/glog"
+	"github.com/donetkit/contrib-log/glog"
 	"net/http"
 	"time"
 )

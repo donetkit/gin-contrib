@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/donetkit/gin-contrib/discovery/consul"
-	"github.com/donetkit/gin-contrib/server"
+	server2 "github.com/donetkit/gin-contrib/server/webserve"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -16,10 +16,6 @@ func main() {
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong "+fmt.Sprint(time.Now().Unix()))
 	})
-	appServe, err := server.New(server.WithHandler(r))
-	if err != nil {
-		panic(err)
-	}
-	appServe.AddDiscovery(consulClient).Run()
+	server2.New(server2.WithHandler(r)).AddDiscovery(consulClient).Run()
 
 }

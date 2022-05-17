@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	service     = "gin-gonic-development-server"
+	service     = "gin-gonic-development-webserve"
 	environment = "development" // "production" "development"
 )
 

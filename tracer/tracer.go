@@ -9,7 +9,7 @@ import (
 
 // New returns middleware that will tracer incoming requests.
 // The service parameter should describe the name of the (virtual)
-// server handling the request.
+// webserve handling the request.
 func New(opts ...Option) *Server {
 	cfg := &Server{
 		tracerName: "Service",
