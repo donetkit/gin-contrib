@@ -1,7 +1,7 @@
 package favicon
 
 import (
-	"github.com/donetkit/gin-contrib-log/glog"
+	"github.com/donetkit/contrib-log/glog"
 )
 
 type option struct {

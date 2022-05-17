@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/donetkit/gin-contrib-log/glog"
+	"github.com/donetkit/contrib-log/glog"
 	"gorm.io/gorm/logger"
 	"gorm.io/gorm/utils"
 	"time"

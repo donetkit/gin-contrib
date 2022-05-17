@@ -2,7 +2,7 @@ package recovery
 
 import (
 	"fmt"
-	"github.com/donetkit/gin-contrib-log/glog"
+	"github.com/donetkit/contrib-log/glog"
 	"net"
 	"net/http"
 	"net/http/httputil"

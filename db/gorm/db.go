@@ -1,7 +1,7 @@
 package gorm
 
 import (
-	"github.com/donetkit/gin-contrib-log/glog"
+	"github.com/donetkit/contrib-log/glog"
 	"github.com/donetkit/gin-contrib/tracer"
 	"go.opentelemetry.io/otel/attribute"
 	"gorm.io/driver/mysql"

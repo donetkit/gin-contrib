@@ -1,7 +1,7 @@
 package cache
 
 import (
-	"github.com/donetkit/gin-contrib-log/glog"
+	"github.com/donetkit/contrib-log/glog"
 	"github.com/donetkit/gin-contrib/utils/cache"
 )
 

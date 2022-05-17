@@ -2,7 +2,7 @@ package redis
 
 import (
 	"context"
-	"github.com/donetkit/gin-contrib-log/glog"
+	"github.com/donetkit/contrib-log/glog"
 	"github.com/donetkit/gin-contrib/tracer"
 	"go.opentelemetry.io/otel/attribute"
 	semconv "go.opentelemetry.io/otel/semconv/v1.10.0"

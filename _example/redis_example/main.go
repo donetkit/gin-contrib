@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/donetkit/gin-contrib-log/glog"
+	"github.com/donetkit/contrib-log/glog"
 	redisRedis "github.com/donetkit/gin-contrib/db/redis"
 	"github.com/donetkit/gin-contrib/tracer"
 	"github.com/donetkit/gin-contrib/utils/cache"

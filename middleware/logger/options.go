@@ -1,6 +1,6 @@
 package logger
 
-import "github.com/donetkit/gin-contrib-log/glog"
+import "github.com/donetkit/contrib-log/glog"
 
 // Config defines the config for logger middleware
 type config struct {

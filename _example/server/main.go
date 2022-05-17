@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/donetkit/gin-contrib-log/glog"
+	"github.com/donetkit/contrib-log/glog"
 	"github.com/donetkit/gin-contrib/discovery"
 	"github.com/donetkit/gin-contrib/discovery/consul"
 	logger2 "github.com/donetkit/gin-contrib/middleware/logger"

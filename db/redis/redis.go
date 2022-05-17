@@ -3,7 +3,7 @@ package redis
 import (
 	"context"
 	"fmt"
-	"github.com/donetkit/gin-contrib-log/glog"
+	"github.com/donetkit/contrib-log/glog"
 	tracerServer "github.com/donetkit/gin-contrib/tracer"
 	"github.com/go-redis/redis/v8"
 	"go.opentelemetry.io/otel/attribute"
