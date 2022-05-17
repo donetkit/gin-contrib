@@ -15,8 +15,8 @@ github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ3
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/donetkit/contrib v0.0.1 h1:VEx/W6B8vJ1OlGtXcFewhvFkHViz7WS8CAWx9rcH7Q8=
-github.com/donetkit/contrib v0.0.1/go.mod h1:IHdVKm326j7eW4SR8plwrw4hTvBmPwkP7pV0GQuHVNs=
+github.com/donetkit/contrib v0.2.0 h1:0x/NvXvhJon9parj7DSMKQ1PRvNMEviy2xh2pwbuqug=
+github.com/donetkit/contrib v0.2.0/go.mod h1:IHdVKm326j7eW4SR8plwrw4hTvBmPwkP7pV0GQuHVNs=
 github.com/donetkit/contrib-log v0.2.0 h1:Ok4EbU+Hkiqz4oohnNpjINg5sVZoGA/cU9LKlOodNas=
 github.com/donetkit/contrib-log v0.2.0/go.mod h1:7zzkweDEB1lhMs4bhB2mj3gNr1ELpNVESrfECgJkVPk=
 github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=
