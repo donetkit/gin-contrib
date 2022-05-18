@@ -51,12 +51,12 @@ func (l *localFileSystem) Exists(prefix string, filepath string) bool {
 	return false
 }
 
-func ServeRoot(urlPrefix, root string) gin.HandlerFunc {
-	return Serve(urlPrefix, LocalFile(root, false))
+func NewRoot(urlPrefix, root string) gin.HandlerFunc {
+	return New(urlPrefix, LocalFile(root, false))
 }
 
-// Serve Static returns a middleware handler that serves static files in the given directory.
-func Serve(urlPrefix string, fs ServeFileSystem) gin.HandlerFunc {
+// New Static returns a middleware handler that serves static files in the given directory.
+func New(urlPrefix string, fs ServeFileSystem) gin.HandlerFunc {
 	fileServer := http.FileServer(fs)
 	if urlPrefix != "" {
 		fileServer = http.StripPrefix(urlPrefix, fileServer)

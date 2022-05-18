@@ -10,12 +10,12 @@ import (
 func main() {
 	r := gin.Default()
 
-	// if Allow DirectoryIndex
-	//r.Use(static.Serve("/", static.LocalFile("/tmp", true)))
-	// set prefix
-	//r.Use(static.Serve("/static", static.LocalFile("/tmp", true)))
+	//if Allow DirectoryIndex
+	//r.Use(static.New("/", static.LocalFile("/tmp", true)))
+	//set prefix
+	//r.Use(static.New("/static", static.LocalFile("/tmp", true)))
 
-	r.Use(static.Serve("/", static.LocalFile("./tmp", false)))
+	r.Use(static.New("/", static.LocalFile("./tmp", false)))
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(200, "test")
 	})
