@@ -16,7 +16,13 @@ func main() {
 	client, _ := consul.New(
 		discovery.WithServiceRegisterAddr("127.0.0.1"),
 		discovery.WithServiceRegisterPort(8500),
-		discovery.WithCheckHTTP(func(url string) { r.GET(url, func(c *gin.Context) { c.String(200, "Healthy") }) }))
+		discovery.WithCheckOnLine(true),
+		discovery.WithCheckHTTP(func(url string, update discovery.UpdateServerTime) {
+			r.GET(url, func(c *gin.Context) {
+				c.String(200, "Healthy")
+				update()
+			})
+		}))
 	// Example ping request.
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong "+fmt.Sprint(time.Now().Unix()))
