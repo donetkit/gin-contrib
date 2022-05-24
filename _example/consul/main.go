@@ -13,13 +13,10 @@ import (
 func main() {
 	r := gin.New()
 	consulClient, _ := consul.New(
-		discovery.WithServiceRegisterAddr("127.0.0.1"),
-		discovery.WithServiceRegisterPort(8500),
-		discovery.WithCheckHTTP(func(url string, update discovery.UpdateServerTime) {
-			r.GET(url, func(c *gin.Context) {
-				c.String(200, "Healthy")
-				update()
-			})
+		discovery.WithRegisterAddr("127.0.0.1"),
+		discovery.WithRegisterPort(8500),
+		discovery.WithCheckHTTP(func(response *discovery.CheckResponse) {
+			r.GET(response.Url, func(c *gin.Context) { c.String(200, response.Result()) })
 		}))
 	// Example ping request.
 	r.GET("/ping", func(c *gin.Context) {
