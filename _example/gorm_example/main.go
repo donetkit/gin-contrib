@@ -19,7 +19,7 @@ func main() {
 	tp, err := tracer.NewTracerProvider(service, "127.0.0.1", environment, 6831)
 	if err == nil {
 		jaeger := tracer.Jaeger{}
-		traceServer = tracer.New(tracer.WithTracerName(service), tracer.WithTracerProvider(tp), tracer.WithPropagators(jaeger))
+		traceServer = tracer.New(tracer.WithName(service), tracer.WithProvider(tp), tracer.WithPropagators(jaeger))
 	}
 	var dns = map[string]string{}
 	dns["default"] = "root:test@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms"
