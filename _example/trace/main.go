@@ -20,8 +20,8 @@ func main() {
 	tp, err := tracer.NewTracerProvider(service, "127.0.0.1", environment, 6831)
 	if err == nil {
 		jaeger := tracer.Jaeger{}
-		traceServer := tracer.New(tracer.WithTracerName(service), tracer.WithTracerProvider(tp), tracer.WithPropagators(jaeger))
-		r.Use(gintrace.New(gintrace.WithTracerName(service), gintrace.WithTracer(traceServer), gintrace.WithWriterTraceId(true), gintrace.WithWriterSpanId(true)))
+		traceServer := tracer.New(tracer.WithName(service), tracer.WithProvider(tp), tracer.WithPropagators(jaeger))
+		r.Use(gintrace.New(gintrace.WithName(service), gintrace.WithTracer(traceServer), gintrace.WithWriterTraceId(), gintrace.WithWriterSpanId()))
 		defer func() {
 			tp.Shutdown(context.Background())
 		}()

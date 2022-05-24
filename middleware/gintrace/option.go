@@ -63,24 +63,24 @@ func WithEndpointLabelMappingFn(endpointLabelMappingFn RequestLabelMappingFn) Op
 	})
 }
 
-// WithWriterTraceId set writerTraceId function
-func WithWriterTraceId(writerTraceId bool) Option {
+// WithWriterTraceId  writer traceId function
+func WithWriterTraceId() Option {
 	return optionFunc(func(cfg *config) {
-		cfg.writerTraceId = writerTraceId
+		cfg.writerTraceId = true
 	})
 }
 
-// WithWriterSpanId set writerSpanId function
-func WithWriterSpanId(writerSpanId bool) Option {
+// WithWriterSpanId  writer spanId function
+func WithWriterSpanId() Option {
 	return optionFunc(func(cfg *config) {
-		cfg.writerSpanId = writerSpanId
+		cfg.writerSpanId = true
 	})
 }
 
-// WithTracerName  tracerName default Service
-func WithTracerName(tracerName string) Option {
+// WithName  name default Service
+func WithName(name string) Option {
 	return optionFunc(func(cfg *config) {
-		cfg.tracerName = tracerName
+		cfg.tracerName = name
 	})
 }
 
