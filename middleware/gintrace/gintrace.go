@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"github.com/donetkit/contrib/tracer"
 	"github.com/gin-gonic/gin"
-	"regexp"
-
 	"go.opentelemetry.io/otel/codes"
+	"regexp"
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"
@@ -57,6 +56,9 @@ func New(opts ...Option) gin.HandlerFunc {
 			oteltrace.WithAttributes(semconv.EndUserAttributesFromHTTPRequest(c.Request)...),
 			oteltrace.WithAttributes(semconv.HTTPServerAttributesFromHTTPRequest(cfg.tracerName, c.FullPath(), c.Request)...),
 			oteltrace.WithSpanKind(oteltrace.SpanKindServer),
+		}
+		if values, ok := c.Request.Header["X-Forwarded-For"]; ok && len(values) > 0 {
+			opts = append(opts, oteltrace.WithAttributes(attribute.String("X-Forwarded-For", values[0])))
 		}
 		spanName := c.FullPath()
 		if spanName == "" {
