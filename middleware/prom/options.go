@@ -9,6 +9,7 @@ import (
 type config struct {
 	handlerUrl             string
 	namespace              string
+	name                   string
 	duration               []float64
 	excludeRegexStatus     []string
 	excludeRegexEndpoint   []string
@@ -23,6 +24,13 @@ type Option func(*config)
 func WithNamespace(namespace string) Option {
 	return func(cfg *config) {
 		cfg.namespace = namespace
+	}
+}
+
+// WithName set name function
+func WithName(name string) Option {
+	return func(cfg *config) {
+		cfg.name = name
 	}
 }
 
@@ -70,7 +78,7 @@ func WithPromHandler(router *gin.Engine) Option {
 	}
 }
 
-// WithDuration set duration function
+// WithDuration set duration function 0.1, 0.3, 1.2, 5
 func WithDuration(duration []float64) Option {
 	return func(cfg *config) {
 		cfg.duration = duration

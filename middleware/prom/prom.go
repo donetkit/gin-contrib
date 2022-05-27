@@ -12,6 +12,8 @@ import (
 var (
 	labels = []string{"status", "endpoint", "method"}
 
+	labelsServeName = []string{"name"}
+
 	uptime *prometheus.CounterVec
 
 	reqCount *prometheus.CounterVec
@@ -30,7 +32,7 @@ func (c *config) registerPrometheusOpts() {
 			Namespace: c.namespace,
 			Name:      "uptime",
 			Help:      "HTTP service uptime.",
-		}, nil,
+		}, labelsServeName,
 	)
 
 	reqCount = prometheus.NewCounterVec(
@@ -66,13 +68,13 @@ func (c *config) registerPrometheusOpts() {
 		}, labels,
 	)
 	prometheus.MustRegister(uptime, reqCount, reqDuration, reqSizeBytes, respSizeBytes)
-	go recordUptime()
+	go c.recordUptime()
 }
 
 // recordUptime increases service uptime per second.
-func recordUptime() {
+func (c *config) recordUptime() {
 	for range time.Tick(time.Second) {
-		uptime.WithLabelValues().Inc()
+		uptime.WithLabelValues(c.name).Inc()
 	}
 }
 
@@ -128,6 +130,7 @@ func (c *config) checkLabel(label string, patterns []string) bool {
 func New(opts ...Option) gin.HandlerFunc {
 	cfg := &config{
 		namespace:  "service",
+		name:       "service",
 		duration:   []float64{0.1, 0.3, 1.2, 5},
 		handlerUrl: "/metrics",
 		endpointLabelMappingFn: func(c *gin.Context) string {
