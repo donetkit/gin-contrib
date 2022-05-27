@@ -121,7 +121,7 @@ var defaultLogFormatter = func(param LogFormatterParams) string {
 		// Truncate in a golang < 1.8 safe way
 		param.Latency = param.Latency - param.Latency%time.Second
 	}
-	return fmt.Sprintf(" |%s %3d %s| %13v | %15s |%s %-7s %s %#v %s",
+	return fmt.Sprintf("%s %3d %s| %13v | %15s |%s %-7s %s %#v %s",
 		statusColor, param.StatusCode, resetColor,
 		param.Latency,
 		param.ClientIP,
@@ -189,6 +189,9 @@ func New(opts ...Option) gin.HandlerFunc {
 		if !isOk {
 			return
 		}
+
+		// Process request
+		c.Next()
 		raw := c.Request.URL.RawQuery
 		param := LogFormatterParams{
 			Request: c.Request,
@@ -196,8 +199,6 @@ func New(opts ...Option) gin.HandlerFunc {
 			Keys:    c.Keys,
 		}
 		// Stop timer
-		param.TimeStamp = start
-		param.Latency = param.TimeStamp.Sub(start)
 		param.ClientIP = c.ClientIP()
 		param.Method = method
 		param.StatusCode = c.Writer.Status()
@@ -206,13 +207,10 @@ func New(opts ...Option) gin.HandlerFunc {
 			endpoint = endpoint + "?" + raw
 		}
 		param.Path = endpoint
-		cfg.logger.Info("Start " + cfg.formatter(param))
-		// Process request
-		c.Next()
 		param.TimeStamp = time.Now() // Stop timer
 		param.Latency = param.TimeStamp.Sub(start)
 		param.ErrorMessage = c.Errors.ByType(gin.ErrorTypePrivate).String()
-		cfg.logger.Info("End   " + cfg.formatter(param))
+		cfg.logger.Info(cfg.formatter(param))
 
 	}
 }
