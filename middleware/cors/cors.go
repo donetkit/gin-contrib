@@ -143,29 +143,35 @@ func (c Config) parseWildcardRules() [][]string {
 }
 
 // DefaultConfig returns a generic default configuration mapped to localhost.
-func DefaultConfig() Config {
-	return Config{
+//func DefaultConfig() Config {
+//	return Config{
+//		AllowOrigins:     []string{"*"},
+//		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
+//		AllowHeaders:     []string{"Origin", "Content-Type", "Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Cache-Control", "Content-Language"},
+//		ExposeHeaders:    []string{},
+//		AllowCredentials: true,
+//		AllowOriginFunc:  func(origin string) bool { return true },
+//		MaxAge:           12 * time.Hour,
+//	}
+//}
+
+// New returns the location middleware with user-defined custom configuration.
+func New(opts ...Option) gin.HandlerFunc {
+	cfg := &Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Content-Length"},
-		ExposeHeaders:    []string{"Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Cache-Control", "Content-Language"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Cache-Control", "Content-Language"},
+		ExposeHeaders:    []string{},
 		AllowCredentials: true,
+		AllowAllOrigins:  false,
 		AllowOriginFunc:  func(origin string) bool { return true },
 		MaxAge:           12 * time.Hour,
 	}
-}
-
-// Default returns the location middleware with default configuration.
-func Default() gin.HandlerFunc {
-	config := DefaultConfig()
-	config.AllowAllOrigins = true
-	return New(config)
-}
-
-// New returns the location middleware with user-defined custom configuration.
-func New(config Config) gin.HandlerFunc {
-	cors := newCors(config)
+	for _, opt := range opts {
+		opt(cfg)
+	}
+	cs := newCors(cfg)
 	return func(c *gin.Context) {
-		cors.applyCors(c)
+		cs.applyCors(c)
 	}
 }

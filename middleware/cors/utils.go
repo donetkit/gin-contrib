@@ -9,7 +9,7 @@ import (
 
 type converter func(string) string
 
-func generateNormalHeaders(c Config) http.Header {
+func generateNormalHeaders(c *Config) http.Header {
 	headers := make(http.Header)
 	if c.AllowCredentials {
 		headers.Set("Access-Control-Allow-Credentials", "true")
@@ -26,7 +26,7 @@ func generateNormalHeaders(c Config) http.Header {
 	return headers
 }
 
-func generatePreflightHeaders(c Config) http.Header {
+func generatePreflightHeaders(c *Config) http.Header {
 	headers := make(http.Header)
 	if c.AllowCredentials {
 		headers.Set("Access-Control-Allow-Credentials", "true")

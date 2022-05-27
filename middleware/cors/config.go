@@ -37,7 +37,7 @@ var (
 	}
 )
 
-func newCors(config Config) *cors {
+func newCors(config *Config) *cors {
 	if err := config.Validate(); err != nil {
 		panic(err.Error())
 	}
