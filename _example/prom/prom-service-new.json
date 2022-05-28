@@ -25,7 +25,7 @@
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": 27,
-  "iteration": 1653627443212,
+  "iteration": 1653632455914,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -673,9 +673,9 @@
     "list": [
       {
         "current": {
-          "selected": true,
-          "text": "xiaodi_plan_server",
-          "value": "xiaodi_plan_server"
+          "selected": false,
+          "text": "xiaodi_edu_server",
+          "value": "xiaodi_edu_server"
         },
         "datasource": {
           "type": "prometheus",
@@ -700,9 +700,9 @@
       },
       {
         "current": {
-          "selected": false,
-          "text": "172.17.0.30:80",
-          "value": "172.17.0.30:80"
+          "selected": true,
+          "text": "172.17.0.26:80",
+          "value": "172.17.0.26:80"
         },
         "datasource": {
           "type": "prometheus",
@@ -731,8 +731,8 @@
       {
         "current": {
           "selected": false,
-          "text": "Prometheus",
-          "value": "Prometheus"
+          "text": "default",
+          "value": "default"
         },
         "hide": 2,
         "includeAll": false,
@@ -810,6 +810,7 @@
           }
         ],
         "query": "1m,10m,30m,1h,6h,12h,1d,7d,14d,30d",
+        "queryValue": "",
         "refresh": 2,
         "skipUrlSync": false,
         "type": "interval"
@@ -824,7 +825,7 @@
           "type": "prometheus",
           "uid": "$datasource"
         },
-        "definition": "label_values(service_http_request_count_total{endpoint!~\"/metrics\", status!=\"404\", job=~\"$job\"}, endpoint)",
+        "definition": "label_values(service_http_request_count_total{endpoint!~\"/metrics\", status!=\"404\", instance=~\"$job\"}, endpoint)",
         "hide": 0,
         "includeAll": true,
         "label": "Endpoint",
@@ -832,8 +833,8 @@
         "name": "endpoint",
         "options": [],
         "query": {
-          "query": "label_values(service_http_request_count_total{endpoint!~\"/metrics\", status!=\"404\", job=~\"$job\"}, endpoint)",
-          "refId": "Prometheus-endpoint-Variable-Query"
+          "query": "label_values(service_http_request_count_total{endpoint!~\"/metrics\", status!=\"404\", instance=~\"$job\"}, endpoint)",
+          "refId": "StandardVariableQuery"
         },
         "refresh": 1,
         "regex": "",
@@ -846,7 +847,7 @@
       },
       {
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -863,7 +864,7 @@
         "options": [],
         "query": {
           "query": "label_values(service_http_request_count_total, method)",
-          "refId": "Prometheus-method-Variable-Query"
+          "refId": "StandardVariableQuery"
         },
         "refresh": 1,
         "regex": "",
@@ -877,8 +878,8 @@
       {
         "current": {
           "selected": true,
-          "text": "All",
-          "value": "$__all"
+          "text": "200",
+          "value": "200"
         },
         "datasource": {
           "type": "prometheus",
@@ -906,7 +907,7 @@
       },
       {
         "current": {
-          "selected": false,
+          "selected": true,
           "text": "0.95",
           "value": "0.95"
         },
@@ -933,13 +934,14 @@
           }
         ],
         "query": "0.95,0.75,0.25",
+        "queryValue": "",
         "skipUrlSync": false,
         "type": "custom"
       }
     ]
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
@@ -969,6 +971,6 @@
   "timezone": "browser",
   "title": "Gin Service",
   "uid": "EyaoypOZx",
-  "version": 9,
+  "version": 13,
   "weekStart": ""
 }
