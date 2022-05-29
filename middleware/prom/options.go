@@ -11,6 +11,7 @@ type config struct {
 	namespace              string
 	name                   string
 	duration               []float64
+	slowTime               float64
 	excludeRegexStatus     []string
 	excludeRegexEndpoint   []string
 	excludeRegexMethod     []string
@@ -82,5 +83,12 @@ func WithPromHandler(router *gin.Engine) Option {
 func WithDuration(duration []float64) Option {
 	return func(cfg *config) {
 		cfg.duration = duration
+	}
+}
+
+// WithSlowTime set slowTime function 1
+func WithSlowTime(slowTime float64) Option {
+	return func(cfg *config) {
+		cfg.slowTime = slowTime
 	}
 }

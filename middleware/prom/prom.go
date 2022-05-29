@@ -14,6 +14,10 @@ var (
 
 	labelsServeName = []string{"name"}
 
+	reqUVTotal *prometheus.CounterVec
+
+	slowReqTotal *prometheus.CounterVec
+
 	uptime *prometheus.CounterVec
 
 	reqCount *prometheus.CounterVec
@@ -27,6 +31,23 @@ var (
 
 // init registers the prometheus metrics
 func (c *config) registerPrometheusOpts() {
+
+	reqUVTotal = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Namespace: c.namespace,
+			Name:      "request_uv_total",
+			Help:      "all the server received ip num.",
+		}, nil,
+	)
+
+	slowReqTotal = prometheus.NewCounterVec(
+		prometheus.CounterOpts{
+			Namespace: c.namespace,
+			Name:      "slow_request_total",
+			Help:      fmt.Sprintf("the server handled slow requests counter, t=%d.", int(c.slowTime)),
+		}, labels,
+	)
+
 	uptime = prometheus.NewCounterVec(
 		prometheus.CounterOpts{
 			Namespace: c.namespace,
@@ -67,7 +88,7 @@ func (c *config) registerPrometheusOpts() {
 			Help:      "HTTP response sizes in bytes.",
 		}, labels,
 	)
-	prometheus.MustRegister(uptime, reqCount, reqDuration, reqSizeBytes, respSizeBytes)
+	prometheus.MustRegister(reqUVTotal, slowReqTotal, uptime, reqCount, reqDuration, reqSizeBytes, respSizeBytes)
 	go c.recordUptime()
 }
 
@@ -129,6 +150,7 @@ func (c *config) checkLabel(label string, patterns []string) bool {
 // New returns a gin.HandlerFunc for exporting some Web metrics
 func New(opts ...Option) gin.HandlerFunc {
 	cfg := &config{
+		slowTime:   1,
 		namespace:  "service",
 		name:       "service",
 		duration:   []float64{0.1, 0.3, 1.2, 5},
@@ -141,6 +163,7 @@ func New(opts ...Option) gin.HandlerFunc {
 		opt(cfg)
 	}
 	cfg.registerPrometheusOpts()
+	bloomFilter := NewBloomFilter()
 	return func(c *gin.Context) {
 		start := time.Now()
 		c.Next()
@@ -161,8 +184,21 @@ func New(opts ...Option) gin.HandlerFunc {
 		if respSize < 0 {
 			respSize = 0
 		}
+
+		// set uv
+		if clientIP := c.ClientIP(); !bloomFilter.Contains(clientIP) {
+			bloomFilter.Add(clientIP)
+			reqUVTotal.WithLabelValues().Inc()
+		}
+
+		second := time.Since(start).Seconds()
+		
+		// set slow request
+		if second > cfg.slowTime {
+			slowReqTotal.WithLabelValues(lvs...).Inc()
+		}
 		reqCount.WithLabelValues(lvs...).Inc()
-		reqDuration.WithLabelValues(lvs...).Observe(time.Since(start).Seconds())
+		reqDuration.WithLabelValues(lvs...).Observe(second)
 		reqSizeBytes.WithLabelValues(lvs...).Observe(calcRequestSize(c.Request))
 		respSizeBytes.WithLabelValues(lvs...).Observe(float64(respSize))
 	}
