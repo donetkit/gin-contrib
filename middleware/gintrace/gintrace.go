@@ -40,11 +40,9 @@ func New(opts ...Option) gin.HandlerFunc {
 		endpoint := cfg.endpointLabelMappingFn(c)
 		method := c.Request.Method
 		isOk := cfg.checkLabel(fmt.Sprintf("%d", c.Writer.Status()), cfg.excludeRegexStatus) && cfg.checkLabel(endpoint, cfg.excludeRegexEndpoint) && cfg.checkLabel(method, cfg.excludeRegexMethod)
-
 		if !isOk {
 			return
 		}
-
 		c.Set(tracerKey, cfg.tracerServer)
 		savedCtx := c.Request.Context()
 		defer func() {
@@ -65,8 +63,10 @@ func New(opts ...Option) gin.HandlerFunc {
 			spanName = fmt.Sprintf("HTTP %s route not found", c.Request.Method)
 		}
 		ctx, span := cfg.tracerServer.Tracer.Start(ctx, spanName, opts...)
+		if !span.IsRecording() {
+			return
+		}
 		defer span.End()
-
 		// header写入trace-id和span-id
 		if cfg.writerTraceId {
 			c.Header(cfg.traceIdKey, span.SpanContext().TraceID().String())
@@ -78,7 +78,6 @@ func New(opts ...Option) gin.HandlerFunc {
 		c.Request = c.Request.WithContext(ctx)
 		// serve the request to the next middleware
 		c.Next()
-
 		status := c.Writer.Status()
 		attrs := semconv.HTTPAttributesFromHTTPStatusCode(status)
 		spanStatus, spanMessage := semconv.SpanStatusFromHTTPStatusCode(status)

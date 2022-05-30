@@ -16,7 +16,7 @@ func main() {
 	ctx := context.Background()
 	log := glog.New()
 	var traceServer *tracer.Server
-	tp, err := tracer.NewTracerProvider(service, "127.0.0.1", environment, 6831)
+	tp, err := tracer.NewTracerProvider(service, "127.0.0.1", environment, 6831, tracer.NewFallbackSampler(1.0))
 	if err == nil {
 		jaeger := tracer.Jaeger{}
 		traceServer = tracer.New(tracer.WithName(service), tracer.WithProvider(tp), tracer.WithPropagators(jaeger))
