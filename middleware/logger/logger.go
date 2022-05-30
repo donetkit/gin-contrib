@@ -1,12 +1,17 @@
 package logger
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"net/http"
 	"regexp"
+	"runtime/debug"
 	"time"
 )
+
+var cfg *config
 
 type consoleColorModeValue int
 
@@ -36,8 +41,6 @@ type LogFormatter func(params LogFormatterParams) string
 
 // LogFormatterParams is the structure any formatter will be handed when time to log comes
 type LogFormatterParams struct {
-	Request *http.Request
-
 	// TimeStamp shows the time after the webserve returns a response.
 	TimeStamp time.Time
 	// StatusCode is HTTP response code.
@@ -58,6 +61,17 @@ type LogFormatterParams struct {
 	BodySize int
 	// Keys are the keys set on the request's context.
 	Keys map[string]interface{}
+
+	RequestData      string
+	RequestUserAgent string
+	RequestReferer   string
+	RequestProto     string
+
+	RequestId string
+	TraceId   string
+	SpanId    string
+
+	ResponseData string
 }
 
 // StatusCodeColor is the ANSI color for appropriately logging http status code to a terminal.
@@ -125,7 +139,9 @@ var defaultLogFormatter = func(param LogFormatterParams) string {
 		statusColor, param.StatusCode, resetColor,
 		param.Latency,
 		param.ClientIP,
-		methodColor, param.Method, resetColor,
+		methodColor,
+		param.Method,
+		resetColor,
 		param.Path,
 		param.ErrorMessage,
 	)
@@ -141,29 +157,100 @@ func forceConsoleColor() {
 	consoleColorMode = forceColor
 }
 
-// ErrorLogger returns a handler func for any error type.
-func ErrorLogger() gin.HandlerFunc {
+// NewErrorLogger returns a handler func for any error type.
+func NewErrorLogger(opts ...Option) gin.HandlerFunc {
+	if cfg == nil {
+		cfg = &config{
+			consoleColor: true,
+			endpointLabelMappingFn: func(c *gin.Context) string {
+				return c.Request.URL.Path
+			}}
+	}
+	for _, opt := range opts {
+		opt(cfg)
+	}
+	if cfg.formatter == nil {
+		cfg.formatter = defaultLogFormatter
+	}
+	if cfg.consoleColor {
+		forceConsoleColor()
+	} else {
+		disableConsoleColor()
+	}
 	return ErrorLoggerT(gin.ErrorTypeAny)
 }
 
 // ErrorLoggerT returns a handler func for a given error type.
 func ErrorLoggerT(typ gin.ErrorType) gin.HandlerFunc {
+	isTerm := true
 	return func(c *gin.Context) {
+		defer func() {
+			if errRecover := recover(); errRecover != nil {
+				if cfg.logger == nil {
+					return
+				}
+				var recoverErr = fmt.Sprintf("%s", errRecover)
+				cfg.logger.Error(string(debug.Stack()))
+				start := time.Now() // Start timer
+				method := c.Request.Method
+				endpoint := cfg.endpointLabelMappingFn(c)
+				isOk := cfg.checkLabel(fmt.Sprintf("%d", c.Writer.Status()), cfg.excludeRegexStatus) && cfg.checkLabel(endpoint, cfg.excludeRegexEndpoint) && cfg.checkLabel(method, cfg.excludeRegexMethod)
+				if !isOk {
+					return
+				}
+				rawData, err := c.GetRawData()
+				if err == nil {
+					c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(rawData))
+				}
+				raw := c.Request.URL.RawQuery
+				param := LogFormatterParams{
+					isTerm: isTerm,
+					Keys:   c.Keys,
+				}
+				// Stop timer
+				param.ClientIP = c.ClientIP()
+				param.Method = method
+				param.StatusCode = c.Writer.Status()
+				param.BodySize = c.Writer.Size()
+				if raw != "" {
+					endpoint = endpoint + "?" + raw
+				}
+				param.Path = endpoint
+				param.TimeStamp = time.Now()
+				param.Latency = param.TimeStamp.Sub(start)
+				param.ErrorMessage = recoverErr
+				cfg.logger.Error(cfg.formatter(param))
+				if cfg.writerErrorFn != nil {
+					param.RequestData = string(rawData)
+					param.RequestProto = c.Request.Proto
+					param.RequestUserAgent = c.Request.UserAgent()
+					param.RequestReferer = c.Request.Referer()
+					param.RequestId = c.Request.Header.Get("X-Request-Id")
+					param.TraceId = c.Request.Header.Get("trace-id")
+					param.SpanId = c.Request.Header.Get("span-id")
+					code, msg := cfg.writerErrorFn(&param)
+					c.JSON(code, msg)
+					c.Abort()
+					return
+				}
+				c.JSON(-1, param.ErrorMessage)
+				c.Abort()
+			}
+		}()
 		c.Next()
-		errors := c.Errors.ByType(typ)
-		if len(errors) > 0 {
-			c.JSON(-1, errors)
-		}
+
 	}
 }
 
 // New instances a Logger middleware that will write the logs to gin.DefaultWriter. By default gin.DefaultWriter = os.Stdout.
 func New(opts ...Option) gin.HandlerFunc {
-	cfg := &config{
-		consoleColor: true,
-		endpointLabelMappingFn: func(c *gin.Context) string {
-			return c.Request.URL.Path
-		}}
+	if cfg == nil {
+		cfg = &config{
+			consoleColor: true,
+			endpointLabelMappingFn: func(c *gin.Context) string {
+				return c.Request.URL.Path
+			}}
+	}
 	for _, opt := range opts {
 		opt(cfg)
 	}
@@ -181,22 +268,25 @@ func New(opts ...Option) gin.HandlerFunc {
 		if cfg.logger == nil {
 			return
 		}
-		// Start timer
-		start := time.Now()
+		start := time.Now() // Start timer
 		method := c.Request.Method
 		endpoint := cfg.endpointLabelMappingFn(c)
 		isOk := cfg.checkLabel(fmt.Sprintf("%d", c.Writer.Status()), cfg.excludeRegexStatus) && cfg.checkLabel(endpoint, cfg.excludeRegexEndpoint) && cfg.checkLabel(method, cfg.excludeRegexMethod)
 		if !isOk {
 			return
 		}
-
+		rawData, err := c.GetRawData()
+		if err == nil {
+			c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(rawData))
+		}
+		writer := &bodyWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
+		c.Writer = writer
 		// Process request
 		c.Next()
 		raw := c.Request.URL.RawQuery
 		param := LogFormatterParams{
-			Request: c.Request,
-			isTerm:  isTerm,
-			Keys:    c.Keys,
+			isTerm: isTerm,
+			Keys:   c.Keys,
 		}
 		// Stop timer
 		param.ClientIP = c.ClientIP()
@@ -207,10 +297,22 @@ func New(opts ...Option) gin.HandlerFunc {
 			endpoint = endpoint + "?" + raw
 		}
 		param.Path = endpoint
-		param.TimeStamp = time.Now() // Stop timer
+		param.TimeStamp = time.Now()
 		param.Latency = param.TimeStamp.Sub(start)
 		param.ErrorMessage = c.Errors.ByType(gin.ErrorTypePrivate).String()
 		cfg.logger.Info(cfg.formatter(param))
+
+		if cfg.writerLogFn != nil {
+			param.RequestData = string(rawData)
+			param.RequestProto = c.Request.Proto
+			param.RequestUserAgent = c.Request.UserAgent()
+			param.RequestReferer = c.Request.Referer()
+			param.RequestId = c.Request.Header.Get("X-Request-Id")
+			param.TraceId = c.Request.Header.Get("trace-id")
+			param.SpanId = c.Request.Header.Get("span-id")
+			param.ResponseData = writer.body.String()
+			cfg.writerLogFn(&param)
+		}
 
 	}
 }

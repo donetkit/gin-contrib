@@ -12,14 +12,16 @@ type config struct {
 	excludeRegexMethod     []string
 	endpointLabelMappingFn RequestLabelMappingFn
 	consoleColor           bool
+	writerLogFn            WriterLogFn
+	writerErrorFn          WriterErrorFn
 }
 
 // Option for queue system
 type Option func(*config)
 
-type Generator func() string
+type WriterLogFn func(log *LogFormatterParams)
 
-type HeaderStrKey string
+type WriterErrorFn func(log *LogFormatterParams) (int, interface{})
 
 // WithLogger set logger function
 func WithLogger(logger glog.ILogger) Option {
@@ -67,5 +69,19 @@ func WithFormatter(formatter LogFormatter) Option {
 func WithConsoleColor(consoleColor bool) Option {
 	return func(cfg *config) {
 		cfg.consoleColor = consoleColor
+	}
+}
+
+// WithWriterLogFn set fn WriterLogFn
+func WithWriterLogFn(fn WriterLogFn) Option {
+	return func(cfg *config) {
+		cfg.writerLogFn = fn
+	}
+}
+
+// WithWriterErrorFn set fn WriterErrorFn
+func WithWriterErrorFn(fn WriterErrorFn) Option {
+	return func(cfg *config) {
+		cfg.writerErrorFn = fn
 	}
 }

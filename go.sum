@@ -15,8 +15,6 @@ github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ3
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/donetkit/contrib v0.2.3 h1:bNGIsBwo/TUmZwS6D5c16GLka4gYdvfNRS0pn0aae80=
-github.com/donetkit/contrib v0.2.3/go.mod h1:IHdVKm326j7eW4SR8plwrw4hTvBmPwkP7pV0GQuHVNs=
 github.com/donetkit/contrib v0.2.4 h1:IejnyK49lKCc6zCLkw3ljny0+OIU13kWDQ+OP18qAlc=
 github.com/donetkit/contrib v0.2.4/go.mod h1:IHdVKm326j7eW4SR8plwrw4hTvBmPwkP7pV0GQuHVNs=
 github.com/donetkit/contrib-log v0.2.0 h1:Ok4EbU+Hkiqz4oohnNpjINg5sVZoGA/cU9LKlOodNas=
