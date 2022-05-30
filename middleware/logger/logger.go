@@ -219,15 +219,15 @@ func ErrorLoggerT(typ gin.ErrorType) gin.HandlerFunc {
 				param.TimeStamp = time.Now()
 				param.Latency = param.TimeStamp.Sub(start)
 				param.ErrorMessage = recoverErr
+				param.RequestData = string(rawData)
+				param.RequestProto = c.Request.Proto
+				param.RequestUserAgent = c.Request.UserAgent()
+				param.RequestReferer = c.Request.Referer()
+				param.RequestId = c.Request.Header.Get("X-Request-Id")
+				param.TraceId = c.Request.Header.Get("trace-id")
+				param.SpanId = c.Request.Header.Get("span-id")
 				cfg.logger.Error(cfg.formatter(param))
 				if cfg.writerErrorFn != nil {
-					param.RequestData = string(rawData)
-					param.RequestProto = c.Request.Proto
-					param.RequestUserAgent = c.Request.UserAgent()
-					param.RequestReferer = c.Request.Referer()
-					param.RequestId = c.Request.Header.Get("X-Request-Id")
-					param.TraceId = c.Request.Header.Get("trace-id")
-					param.SpanId = c.Request.Header.Get("span-id")
 					code, msg := cfg.writerErrorFn(&param)
 					c.JSON(code, msg)
 					c.Abort()
