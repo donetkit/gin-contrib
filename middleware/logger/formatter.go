@@ -24,7 +24,7 @@ func (l *writeLogger) Write(p []byte) (n int, err error) {
 	if l.logger != nil {
 		msg := buf.String()
 		if strings.HasSuffix(msg, "\n") {
-			msg = msg[:len(msg)-2]
+			msg = msg[:len(msg)-1]
 		}
 		l.logger.Info(msg)
 	}
