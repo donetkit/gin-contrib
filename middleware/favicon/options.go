@@ -5,7 +5,7 @@ import (
 )
 
 type option struct {
-	logger      glog.ILogger
+	logger      glog.ILoggerEntry
 	faviconPath string
 	routePaths  []string
 }
@@ -14,7 +14,7 @@ type Option func(*option)
 
 func WithLogger(logger glog.ILogger) Option {
 	return func(o *option) {
-		o.logger = logger
+		o.logger = logger.WithField("Favicon", "Favicon")
 	}
 }
 

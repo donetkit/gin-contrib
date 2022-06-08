@@ -6,7 +6,7 @@ import "github.com/donetkit/contrib-log/glog"
 type config struct {
 	// Optional. Default value is gin.defaultLogFormatter
 	formatter              LogFormatter
-	logger                 glog.ILogger
+	logger                 glog.ILoggerEntry
 	excludeRegexStatus     []string
 	excludeRegexEndpoint   []string
 	excludeRegexMethod     []string
@@ -26,7 +26,7 @@ type WriterErrorFn func(log *LogFormatterParams) (int, interface{})
 // WithLogger set logger function
 func WithLogger(logger glog.ILogger) Option {
 	return func(cfg *config) {
-		cfg.logger = logger
+		cfg.logger = logger.WithField("Gin-Logger", "Gin-Logger")
 	}
 }
 

@@ -16,6 +16,7 @@ import (
 
 // New returns a gin.HandlerFunc (middleware)
 func New(logger glog.ILogger, stack ...bool) gin.HandlerFunc {
+	logs := logger.WithField("Gin-Recover", "Gin-Recover")
 	return func(c *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
@@ -29,17 +30,17 @@ func New(logger glog.ILogger, stack ...bool) gin.HandlerFunc {
 				}
 				httpRequest, _ := httputil.DumpRequest(c.Request, false)
 				if brokenPipe {
-					logger.Error(fmt.Sprintf("path: %s error: %s request: %s", c.Request.URL.Path, err, string(httpRequest)))
+					logs.Error(fmt.Sprintf("path: %s error: %s request: %s", c.Request.URL.Path, err, string(httpRequest)))
 					// If the connection is dead, we can't write a status to it.
 					c.Error(err.(error)) // nolint:
 					c.Abort()
 					return
 				}
 				if len(stack) > 0 && stack[0] {
-					logger.Error("[Recovery from panic] %s error: %s request: %s stack: %s", time.Now().Format(time.RFC3339), err, string(httpRequest), string(debug.Stack()))
+					logs.Error("[Recovery from panic] %s error: %s request: %s stack: %s", time.Now().Format(time.RFC3339), err, string(httpRequest), string(debug.Stack()))
 
 				} else {
-					logger.Error("[Recovery from panic] %s error: %s request: %s", time.Now().Format(time.RFC3339), err, string(httpRequest))
+					logs.Error("[Recovery from panic] %s error: %s request: %s", time.Now().Format(time.RFC3339), err, string(httpRequest))
 				}
 				c.AbortWithStatus(http.StatusInternalServerError)
 			}

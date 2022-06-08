@@ -8,11 +8,11 @@ import (
 )
 
 func SetGinDefaultWriter(logger glog.ILogger) {
-	gin.DefaultWriter = &writeLogger{pool: buffer.Pool{}, logger: logger}
+	gin.DefaultWriter = &writeLogger{pool: buffer.Pool{}, logger: logger.WithField("Gin-Logger", "Gin-Logger")}
 }
 
 type writeLogger struct {
-	logger glog.ILogger
+	logger glog.ILoggerEntry
 	pool   buffer.Pool
 }
 

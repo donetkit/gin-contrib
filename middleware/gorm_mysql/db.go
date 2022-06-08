@@ -67,9 +67,10 @@ func NewDb(opts ...Option) *Client {
 	for _, opt := range opts {
 		opt(c)
 	}
+	log := c.logger.WithField("DB-GORM-MYSQL", "DB-GORM-MYSQL")
 	cfg := &gorm.Config{}
 	if c.logger != nil {
-		cfg.Logger = &ggrom.LogSql{Logger: c.logger, IgnoreRecordNotFoundError: c.ignoreRecordNotFoundError, SlowThreshold: c.slowThreshold}
+		cfg.Logger = &ggrom.LogSql{Logger: log, IgnoreRecordNotFoundError: c.ignoreRecordNotFoundError, SlowThreshold: c.slowThreshold}
 	}
 	var dbs = map[string]*gorm.DB{}
 	for key, val := range c.dsn {
@@ -86,7 +87,7 @@ func NewDb(opts ...Option) *Client {
 		}
 		if c.tracerServer != nil {
 			gcfg := &ggrom.Config{
-				Logger:           c.logger,
+				Logger:           log,
 				TracerServer:     c.tracerServer,
 				Attrs:            c.attrs,
 				ExcludeMetrics:   c.excludeMetrics,
