@@ -11,7 +11,7 @@ func main() {
 	//redisClient := redis.New(redis.WithAddr("192.168.0.3"), redis.WithPort(6379), redis.WithPassword("test")).WithDB(2)
 	redisClient := memory.New().WithDB(2)
 	store, _ := sessions.NewRedisStore(redisClient, []byte("gin-secret"))
-	r.Use(sessions.Sessions("gin-session-cache", store))
+	r.Use(sessions.New("gin-session-cache", store, nil))
 
 	r.GET("/incr", func(c *gin.Context) {
 		session := sessions.Default(c)

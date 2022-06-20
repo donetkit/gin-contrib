@@ -8,7 +8,7 @@ import (
 func main() {
 	r := gin.Default()
 	store := sessions.NewCookieStore([]byte("gin-secret"))
-	r.Use(sessions.Sessions("gin-session", store))
+	r.Use(sessions.New("gin-session", store, nil))
 
 	r.GET("/incr", func(c *gin.Context) {
 		session := sessions.Default(c)

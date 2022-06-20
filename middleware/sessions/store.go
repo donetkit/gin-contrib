@@ -35,7 +35,6 @@ func (s JSONSerializer) Serialize(ss *sessions.Session) ([]byte, error) {
 		ks, ok := k.(string)
 		if !ok {
 			err := fmt.Errorf("Non-string key value, cannot serialize session to JSON: %v", k)
-			fmt.Printf("redistore.JSONSerializer.serialize() Error: %v", err)
 			return nil, err
 		}
 		m[ks] = v
@@ -48,7 +47,6 @@ func (s JSONSerializer) Deserialize(d []byte, ss *sessions.Session) error {
 	m := make(map[string]interface{})
 	err := json.Unmarshal(d, &m)
 	if err != nil {
-		fmt.Printf("redistore.JSONSerializer.deserialize() Error: %v", err)
 		return err
 	}
 	for k, v := range m {
@@ -127,7 +125,7 @@ func (s *CacheStore) SetMaxAge(v int) {
 		if c, ok = s.Codecs[i].(*securecookie.SecureCookie); ok {
 			c.MaxAge(v)
 		} else {
-			fmt.Printf("Can't change MaxAge on codec %v\n", s.Codecs[i])
+			//fmt.Printf("Can't change MaxAge on codec %v\n", s.Codecs[i])
 		}
 	}
 }

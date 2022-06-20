@@ -8,7 +8,7 @@ type CookieStore interface {
 	Store
 }
 
-// Keys are defined in pairs to allow key rotation, but the common case is to set a single
+// NewCookieStore Keys are defined in pairs to allow key rotation, but the common case is to set a single
 // authentication key and optionally an encryption key.
 //
 // The first key in a pair is used for authentication and the second for encryption. The

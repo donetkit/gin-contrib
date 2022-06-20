@@ -1,7 +1,7 @@
 package sessions
 
 import (
-	"log"
+	"github.com/donetkit/contrib-log/glog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -57,9 +57,9 @@ type Session interface {
 	Save() error
 }
 
-func Sessions(name string, store Store) gin.HandlerFunc {
+func New(name string, store Store, logger glog.ILogger) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		s := &session{name, c.Request, store, nil, false, c.Writer}
+		s := &session{name, c.Request, store, nil, false, c.Writer, logger.WithField("Session", "Session")}
 		c.Set(DefaultKey, s)
 		defer context.Clear(c.Request)
 		c.Next()
@@ -73,6 +73,7 @@ type session struct {
 	session *sessions.Session
 	written bool
 	writer  http.ResponseWriter
+	logger  glog.ILoggerEntry
 }
 
 func (s *session) Get(key interface{}) interface{} {
@@ -131,7 +132,9 @@ func (s *session) Session() *sessions.Session {
 		var err error
 		s.session, err = s.store.Get(s.request, s.name)
 		if err != nil {
-			log.Printf(errorFormat, err)
+			if s.logger != nil {
+				s.logger.Errorf(errorFormat, err)
+			}
 		}
 	}
 	return s.session
