@@ -1,4 +1,4 @@
-package sessions
+package session
 
 import (
 	"github.com/donetkit/contrib-log/glog"
@@ -10,11 +10,11 @@ import (
 )
 
 const (
-	DefaultKey  = "github.com/gin-gonic/contrib/sessions"
-	errorFormat = "[sessions] ERROR! %s\n"
+	DefaultKey  = "github.com/gin-gonic/contrib/session"
+	errorFormat = "[session] ERROR! %s\n"
 )
 
-type Store interface {
+type SessionsStore interface {
 	sessions.Store
 	Options(Options)
 }
@@ -32,7 +32,7 @@ type Options struct {
 	HttpOnly bool
 }
 
-// Wraps thinly gorilla-session methods.
+// Session Wraps thinly gorilla-session methods.
 // Session stores the values and optional configuration for a session.
 type Session interface {
 	// Get returns the session value associated to the given key.
@@ -53,11 +53,11 @@ type Session interface {
 	Flashes(vars ...string) []interface{}
 	// Options sets configuration for a session.
 	Options(Options)
-	// Save saves all sessions used during the current request.
+	// Save saves all session used during the current request.
 	Save() error
 }
 
-func New(name string, store Store, logger glog.ILogger) gin.HandlerFunc {
+func New(name string, store SessionsStore, logger glog.ILogger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		s := &session{name, c.Request, store, nil, false, c.Writer, logger.WithField("Session", "Session")}
 		c.Set(DefaultKey, s)
@@ -69,7 +69,7 @@ func New(name string, store Store, logger glog.ILogger) gin.HandlerFunc {
 type session struct {
 	name    string
 	request *http.Request
-	store   Store
+	store   SessionsStore
 	session *sessions.Session
 	written bool
 	writer  http.ResponseWriter
@@ -144,7 +144,7 @@ func (s *session) Written() bool {
 	return s.written
 }
 
-// shortcut to get session
+// Default shortcut to get session
 func Default(c *gin.Context) Session {
 	return c.MustGet(DefaultKey).(Session)
 }

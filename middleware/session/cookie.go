@@ -1,11 +1,11 @@
-package sessions
+package session
 
 import (
 	"github.com/gorilla/sessions"
 )
 
 type CookieStore interface {
-	Store
+	SessionsStore
 }
 
 // NewCookieStore Keys are defined in pairs to allow key rotation, but the common case is to set a single

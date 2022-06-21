@@ -1,4 +1,4 @@
-package sessions
+package session
 
 import (
 	"testing"
@@ -6,8 +6,8 @@ import (
 
 const redisTestServer = "localhost:6379"
 
-var newRedisStore = func(_ *testing.T) Store {
-	store, err := NewRedisStore(nil, []byte("secret"))
+var newRedisStore = func(_ *testing.T) SessionsStore {
+	store, err := NewStore(nil, []byte("secret"))
 	if err != nil {
 		panic(err)
 	}

@@ -1,4 +1,4 @@
-package sessions
+package session
 
 import (
 	"bytes"
@@ -75,7 +75,7 @@ func (s GobSerializer) Deserialize(d []byte, ss *sessions.Session) error {
 	return dec.Decode(&ss.Values)
 }
 
-// CacheStore stores sessions in a redis backend.
+// CacheStore stores session in a redis backend.
 type CacheStore struct {
 	Cache         cache.IShortCache
 	Codecs        []securecookie.Codec
@@ -87,7 +87,7 @@ type CacheStore struct {
 }
 
 // SetMaxLength sets CacheStore.maxLength if the `l` argument is greater or equal 0
-// maxLength restricts the maximum length of new sessions to l.
+// maxLength restricts the maximum length of new session to l.
 // If l is 0 there is no limit to the size of a session, use with caution.
 // The default for a new CacheStore is 4096. Redis allows for max.
 // Default: 4096,
@@ -148,14 +148,14 @@ func NewCacheStore(cache cache.IShortCache, keyPairs ...[]byte) *CacheStore {
 
 // Get returns a session for the given name after adding it to the registry.
 //
-// See gorilla/sessions FilesystemStore.Get().
+// See gorilla/session FilesystemStore.Get().
 func (s *CacheStore) Get(r *http.Request, name string) (*sessions.Session, error) {
 	return sessions.GetRegistry(r).Get(s, name)
 }
 
 // New returns a session for the given name without adding it to the registry.
 //
-// See gorilla/sessions FilesystemStore.New().
+// See gorilla/session FilesystemStore.New().
 func (s *CacheStore) New(r *http.Request, name string) (*sessions.Session, error) {
 	var (
 		err error
@@ -203,7 +203,7 @@ func (s *CacheStore) Save(r *http.Request, w http.ResponseWriter, session *sessi
 
 // Delete removes the session from redis, and sets the cookie to expire.
 //
-// WARNING: This method should be considered deprecated since it is not exposed via the gorilla/sessions interface.
+// WARNING: This method should be considered deprecated since it is not exposed via the gorilla/session interface.
 // Set session.Options.MaxAge = -1 and call Save instead. - July 18th, 2013
 func (s *CacheStore) Delete(r *http.Request, w http.ResponseWriter, session *sessions.Session) error {
 	if _, err := s.Cache.WithContext(r.Context()).Delete(s.keyPrefix + session.ID); err != nil {

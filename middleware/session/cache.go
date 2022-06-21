@@ -1,4 +1,4 @@
-package sessions
+package session
 
 import (
 	"github.com/donetkit/contrib/utils/cache"
@@ -6,10 +6,10 @@ import (
 )
 
 type ICacheStore interface {
-	Store
+	SessionsStore
 }
 
-// size: maximum number of idle connections.
+// NewStore size: maximum number of idle connections.
 // network: tcp or udp
 // address: host:port
 // password: redis-password
@@ -22,16 +22,16 @@ type ICacheStore interface {
 //
 // It is recommended to use an authentication key with 32 or 64 bytes. The encryption key,
 // if set, must be either 16, 24, or 32 bytes to select AES-128, AES-192, or AES-256 modes.
-func NewRedisStore(cache cache.IShortCache, keyPairs ...[]byte) (ICacheStore, error) {
+func NewStore(cache cache.IShortCache, keyPairs ...[]byte) (ICacheStore, error) {
 	store := NewCacheStore(cache, keyPairs...)
-	return &redisStore{store}, nil
+	return &cacheStore{store}, nil
 }
 
-type redisStore struct {
+type cacheStore struct {
 	*CacheStore
 }
 
-func (c *redisStore) Options(options Options) {
+func (c *cacheStore) Options(options Options) {
 	c.CacheStore.Options = &sessions.Options{
 		Path:     options.Path,
 		Domain:   options.Domain,

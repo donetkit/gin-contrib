@@ -1,17 +1,17 @@
 package main
 
 import (
-	"github.com/donetkit/contrib-gin/middleware/sessions"
+	"github.com/donetkit/contrib-gin/middleware/session"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	r := gin.Default()
-	store := sessions.NewCookieStore([]byte("gin-secret"))
-	r.Use(sessions.New("gin-session", store, nil))
+	store := session.NewCookieStore([]byte("gin-secret"))
+	r.Use(session.New("gin-session", store, nil))
 
 	r.GET("/incr", func(c *gin.Context) {
-		session := sessions.Default(c)
+		session := session.Default(c)
 		var count int
 		v := session.Get("count")
 		if v == nil {

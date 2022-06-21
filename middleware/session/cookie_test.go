@@ -1,10 +1,10 @@
-package sessions
+package session
 
 import (
 	"testing"
 )
 
-var newCookieStore = func(_ *testing.T) Store {
+var newCookieStore = func(_ *testing.T) SessionsStore {
 	store := NewCookieStore([]byte("secret"))
 	return store
 }

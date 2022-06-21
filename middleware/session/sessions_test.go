@@ -1,4 +1,4 @@
-package sessions
+package session
 
 import (
 	"github.com/gin-gonic/gin"
@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-type storeFactory func(*testing.T) Store
+type storeFactory func(*testing.T) SessionsStore
 
 const sessionName = "mysession"
 
@@ -16,7 +16,7 @@ const ok = "ok"
 
 func sessionGetSet(t *testing.T, newStore storeFactory) {
 	r := gin.Default()
-	r.Use(Sessions(sessionName, newStore(t)))
+	r.Use(New(sessionName, newStore(t), nil))
 
 	r.GET("/set", func(c *gin.Context) {
 		session := Default(c)
@@ -46,7 +46,7 @@ func sessionGetSet(t *testing.T, newStore storeFactory) {
 
 func sessionDeleteKey(t *testing.T, newStore storeFactory) {
 	r := gin.Default()
-	r.Use(Sessions(sessionName, newStore(t)))
+	r.Use(New(sessionName, newStore(t), nil))
 
 	r.GET("/set", func(c *gin.Context) {
 		session := Default(c)
@@ -92,7 +92,7 @@ func sessionFlashes(t *testing.T, newStore storeFactory) {
 	store.Options(Options{
 		Domain: "localhost",
 	})
-	r.Use(Sessions(sessionName, store))
+	r.Use(New(sessionName, store, nil))
 
 	r.GET("/set", func(c *gin.Context) {
 		session := Default(c)
@@ -143,7 +143,7 @@ func sessionClear(t *testing.T, newStore storeFactory) {
 	}
 	r := gin.Default()
 	store := newStore(t)
-	r.Use(Sessions(sessionName, store))
+	r.Use(New(sessionName, store, nil))
 
 	r.GET("/set", func(c *gin.Context) {
 		session := Default(c)
@@ -182,7 +182,7 @@ func sessionOptions(t *testing.T, newStore storeFactory) {
 	store.Options(Options{
 		Domain: "localhost",
 	})
-	r.Use(Sessions(sessionName, store))
+	r.Use(New(sessionName, store, nil))
 
 	r.GET("/domain", func(c *gin.Context) {
 		session := Default(c)
