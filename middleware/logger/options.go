@@ -1,6 +1,9 @@
 package logger
 
-import "github.com/donetkit/contrib-log/glog"
+import (
+	"github.com/donetkit/contrib-log/glog"
+	"github.com/gin-gonic/gin"
+)
 
 // Config defines the config for logger middleware
 type config struct {
@@ -19,9 +22,9 @@ type config struct {
 // Option for queue system
 type Option func(*config)
 
-type WriterLogFn func(log *LogFormatterParams)
+type WriterLogFn func(c *gin.Context, log *LogFormatterParams)
 
-type WriterErrorFn func(log *LogFormatterParams) (int, interface{})
+type WriterErrorFn func(c *gin.Context, log *LogFormatterParams) (int, interface{})
 
 // WithLogger set logger function
 func WithLogger(logger glog.ILogger) Option {

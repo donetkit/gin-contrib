@@ -13,11 +13,11 @@ import (
 func main() {
 	logs := glog.New()
 	r := gin.New()
-	r.Use(logger.NewErrorLogger(logger.WithWriterErrorFn(func(log *logger.LogFormatterParams) (int, interface{}) {
+	r.Use(logger.NewErrorLogger(logger.WithWriterErrorFn(func(c *gin.Context, log *logger.LogFormatterParams) (int, interface{}) {
 		//fmt.Println(log)
 		return 0, "网络超时, 请重试!"
 	})))
-	r.Use(logger.New(logger.WithLogger(logs), logger.WithWriterLogFn(func(log *logger.LogFormatterParams) {
+	r.Use(logger.New(logger.WithLogger(logs), logger.WithWriterLogFn(func(c *gin.Context, log *logger.LogFormatterParams) {
 		//fmt.Println(log)
 	})))
 	r.GET("/ping", func(c *gin.Context) {
