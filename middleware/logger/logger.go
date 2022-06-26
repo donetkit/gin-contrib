@@ -228,8 +228,8 @@ func ErrorLoggerT(typ gin.ErrorType) gin.HandlerFunc {
 				param.SpanId = c.Request.Header.Get("span-id")
 				cfg.logger.Error(cfg.formatter(param))
 
-				cfg.logger.Debugf("RequestData  => %s", param.RequestData)
-				cfg.logger.Debugf("ResponseData => %s", param.ResponseData)
+				cfg.logger.Debug(param.RequestData)
+				cfg.logger.Debug(param.ResponseData)
 
 				if cfg.writerErrorFn != nil {
 					code, msg := cfg.writerErrorFn(c, &param)
@@ -317,8 +317,8 @@ func New(opts ...Option) gin.HandlerFunc {
 			param.ResponseData = writer.body.String()
 			cfg.writerLogFn(c, &param)
 		}
-		cfg.logger.Debugf("RequestData  => %s", param.RequestData)
-		cfg.logger.Debugf("ResponseData => %s", param.ResponseData)
+		cfg.logger.Debug(param.RequestData)
+		cfg.logger.Debug(param.ResponseData)
 
 	}
 }

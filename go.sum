@@ -21,6 +21,8 @@ github.com/donetkit/contrib v0.2.11 h1:PXAq/UkNSGQIec8Wa8v441z40GZiiTDPk7gQceOE2
 github.com/donetkit/contrib v0.2.11/go.mod h1:/B19QG+yveEtYESD22PybOxOEBYbAPRUChaeQCUVooE=
 github.com/donetkit/contrib v0.2.12 h1:M57A6cBLfvVWMnsezV3fxJaUYOkrTCEqGDZuAAFR5Hk=
 github.com/donetkit/contrib v0.2.12/go.mod h1:/B19QG+yveEtYESD22PybOxOEBYbAPRUChaeQCUVooE=
+github.com/donetkit/contrib v0.2.13 h1:s+DSTSiwTDALIILS0aeHUxNIPag4eroTKaoDAm7wbsk=
+github.com/donetkit/contrib v0.2.13/go.mod h1:/B19QG+yveEtYESD22PybOxOEBYbAPRUChaeQCUVooE=
 github.com/donetkit/contrib-log v0.2.4 h1:LYOamKYMcyvsfDZ6U5/YS7ifxh4kwIHaJF0guH2IyR4=
 github.com/donetkit/contrib-log v0.2.4/go.mod h1:7zzkweDEB1lhMs4bhB2mj3gNr1ELpNVESrfECgJkVPk=
 github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=
