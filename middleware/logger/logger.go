@@ -225,10 +225,17 @@ func ErrorLoggerT(typ gin.ErrorType) gin.HandlerFunc {
 				param.RequestId = c.Request.Header.Get("X-Request-Id")
 				param.TraceId = c.Request.Header.Get("trace-id")
 				param.SpanId = c.Request.Header.Get("span-id")
-				cfg.logger.Error(cfg.formatter(param))
+
+				writer := &bodyWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
+				c.Writer = writer
+
+				param.RequestData = string(rawData)
+				param.ResponseData = writer.body.String()
 
 				cfg.logger.Debug(param.RequestData)
 				cfg.logger.Debug(param.ResponseData)
+
+				cfg.logger.Error(cfg.formatter(param))
 
 				if cfg.writerErrorFn != nil {
 					code, msg := cfg.writerErrorFn(c, &param)
@@ -303,11 +310,15 @@ func New(opts ...Option) gin.HandlerFunc {
 		param.TimeStamp = time.Now()
 		param.Latency = param.TimeStamp.Sub(start)
 		param.ErrorMessage = c.Errors.ByType(gin.ErrorTypePrivate).String()
-		cfg.logger.Info(cfg.formatter(param))
 
 		param.RequestData = string(rawData)
 		param.ResponseData = writer.body.String()
-		
+
+		cfg.logger.Debug(param.RequestData)
+		cfg.logger.Debug(param.ResponseData)
+
+		cfg.logger.Info(cfg.formatter(param))
+
 		if cfg.writerLogFn != nil {
 			param.RequestProto = c.Request.Proto
 			param.RequestUserAgent = c.Request.UserAgent()
@@ -317,8 +328,6 @@ func New(opts ...Option) gin.HandlerFunc {
 			param.SpanId = c.Request.Header.Get("span-id")
 			cfg.writerLogFn(c, &param)
 		}
-		cfg.logger.Debug(param.RequestData)
-		cfg.logger.Debug(param.ResponseData)
 
 	}
 }
