@@ -15,14 +15,8 @@ github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ3
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f h1:lO4WD4F/rVNCu3HqELle0jiPLLBs70cWOduZpkS1E78=
-github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f/go.mod h1:cuUVRXasLTGF7a8hSLbxyZXjz+1KgoB3wDUb6vlszIc=
-github.com/donetkit/contrib v0.2.11 h1:PXAq/UkNSGQIec8Wa8v441z40GZiiTDPk7gQceOE2Bw=
-github.com/donetkit/contrib v0.2.11/go.mod h1:/B19QG+yveEtYESD22PybOxOEBYbAPRUChaeQCUVooE=
-github.com/donetkit/contrib v0.2.12 h1:M57A6cBLfvVWMnsezV3fxJaUYOkrTCEqGDZuAAFR5Hk=
-github.com/donetkit/contrib v0.2.12/go.mod h1:/B19QG+yveEtYESD22PybOxOEBYbAPRUChaeQCUVooE=
-github.com/donetkit/contrib v0.2.13 h1:s+DSTSiwTDALIILS0aeHUxNIPag4eroTKaoDAm7wbsk=
-github.com/donetkit/contrib v0.2.13/go.mod h1:/B19QG+yveEtYESD22PybOxOEBYbAPRUChaeQCUVooE=
+github.com/donetkit/contrib v0.2.14 h1:DNs6M6pRoNukDa+/p3BKZvYjYmgdXgCYQCK92hCPYcY=
+github.com/donetkit/contrib v0.2.14/go.mod h1:/B19QG+yveEtYESD22PybOxOEBYbAPRUChaeQCUVooE=
 github.com/donetkit/contrib-log v0.2.4 h1:LYOamKYMcyvsfDZ6U5/YS7ifxh4kwIHaJF0guH2IyR4=
 github.com/donetkit/contrib-log v0.2.4/go.mod h1:7zzkweDEB1lhMs4bhB2mj3gNr1ELpNVESrfECgJkVPk=
 github.com/gin-contrib/sse v0.1.0 h1:Y/yl/+YNO8GZSjAhjMsSuLt29uWRFHdHYUb5lYOV9qE=
@@ -49,8 +43,6 @@ github.com/go-playground/universal-translator v0.18.0/go.mod h1:UvRDBj+xPUEGrFYl
 github.com/go-playground/validator/v10 v10.4.1/go.mod h1:nlOn6nFhuKACm19sB/8EGNn9GlaMV7XkbRSipzJ0Ii4=
 github.com/go-playground/validator/v10 v10.11.0 h1:0W+xRM511GY47Yy3bZUbJVitCNg2BOGlCyvTqsp/xIw=
 github.com/go-playground/validator/v10 v10.11.0/go.mod h1:i+3WkQ1FvaUjjxh1kSvIA4dMGDBiPU55YFDl0WbKdWU=
-github.com/go-redis/redis/v8 v8.11.5 h1:AcZZR7igkdvfVmQTPnu9WE37LRrO/YrBH5zWyjDC0oI=
-github.com/go-redis/redis/v8 v8.11.5/go.mod h1:gREzHqY1hg6oD9ngVRbLStwAWKhA0FEgq8Jd4h5lpwo=
 github.com/go-sql-driver/mysql v1.6.0 h1:BCTh4TKNUYmOmMUcQ3IipzF5prigylS7XXjEkfCHuOE=
 github.com/go-sql-driver/mysql v1.6.0/go.mod h1:DCzpHaOWr8IXmIStZouvnhqoel9Qv2LBy8hT2VhHyBg=
 github.com/go-stack/stack v1.8.0/go.mod h1:v0f6uXyyMGvRgIKkXu+yp6POWl0qKG85gN/melR3HDY=
