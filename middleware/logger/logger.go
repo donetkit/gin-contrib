@@ -219,7 +219,6 @@ func ErrorLoggerT(typ gin.ErrorType) gin.HandlerFunc {
 				param.TimeStamp = time.Now()
 				param.Latency = param.TimeStamp.Sub(start)
 				param.ErrorMessage = recoverErr
-				param.RequestData = string(rawData)
 				param.RequestProto = c.Request.Proto
 				param.RequestUserAgent = c.Request.UserAgent()
 				param.RequestReferer = c.Request.Referer()
@@ -306,15 +305,16 @@ func New(opts ...Option) gin.HandlerFunc {
 		param.ErrorMessage = c.Errors.ByType(gin.ErrorTypePrivate).String()
 		cfg.logger.Info(cfg.formatter(param))
 
+		param.RequestData = string(rawData)
+		param.ResponseData = writer.body.String()
+		
 		if cfg.writerLogFn != nil {
-			param.RequestData = string(rawData)
 			param.RequestProto = c.Request.Proto
 			param.RequestUserAgent = c.Request.UserAgent()
 			param.RequestReferer = c.Request.Referer()
 			param.RequestId = c.Request.Header.Get("X-Request-Id")
 			param.TraceId = c.Request.Header.Get("trace-id")
 			param.SpanId = c.Request.Header.Get("span-id")
-			param.ResponseData = writer.body.String()
 			cfg.writerLogFn(c, &param)
 		}
 		cfg.logger.Debug(param.RequestData)
