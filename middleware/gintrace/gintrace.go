@@ -55,9 +55,15 @@ func New(opts ...Option) gin.HandlerFunc {
 			oteltrace.WithAttributes(semconv.HTTPServerAttributesFromHTTPRequest(cfg.tracerName, c.FullPath(), c.Request)...),
 			oteltrace.WithSpanKind(oteltrace.SpanKindServer),
 		}
+
+		if values, ok := c.Request.Header["Referer"]; ok && len(values) > 0 {
+			opts = append(opts, oteltrace.WithAttributes(attribute.String("http.referer", values[0])))
+		}
+
 		if values, ok := c.Request.Header["X-Forwarded-For"]; ok && len(values) > 0 {
 			opts = append(opts, oteltrace.WithAttributes(attribute.String("X-Forwarded-For", values[0])))
 		}
+		
 		spanName := c.FullPath()
 		if spanName == "" {
 			spanName = fmt.Sprintf("HTTP %s route not found", c.Request.Method)
