@@ -26,7 +26,7 @@ func (l *writeLogger) Write(p []byte) (n int, err error) {
 		if strings.HasSuffix(msg, "\n") {
 			msg = msg[:len(msg)-1]
 		}
-		l.logger.Info(msg)
+		l.logger.Debug(msg)
 	}
 	return n, err
 }

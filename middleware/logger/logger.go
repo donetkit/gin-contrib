@@ -317,7 +317,7 @@ func New(opts ...Option) gin.HandlerFunc {
 		cfg.logger.Debug(param.RequestData)
 		cfg.logger.Debug(param.ResponseData)
 
-		cfg.logger.Info(cfg.formatter(param))
+		cfg.logger.Debug(cfg.formatter(param))
 
 		if cfg.writerLogFn != nil {
 			param.RequestProto = c.Request.Proto
