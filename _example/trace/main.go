@@ -26,6 +26,7 @@ func main() {
 			tp.Shutdown(context.Background())
 		}()
 	}
+
 	r.GET("/user/:id", func(c *gin.Context) {
 		id := c.Param("id")
 		c.JSON(http.StatusOK, gin.H{
