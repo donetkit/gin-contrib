@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/appleboy/gofight/v2 v2.1.2
-	github.com/donetkit/contrib v0.2.16
+	github.com/donetkit/contrib v0.2.17
 	github.com/donetkit/contrib-log v0.2.5
 	github.com/gin-gonic/gin v1.7.7
 	github.com/golang-jwt/jwt v3.2.2+incompatible
