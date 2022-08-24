@@ -8,6 +8,8 @@ import (
 	"google.golang.org/grpc"
 )
 
+const namespace = "service"
+
 // ServerMetrics represents a collection of metrics to be registered on a
 // Prometheus metrics registry for a gRPC server.
 type ServerMetrics struct {
@@ -29,29 +31,34 @@ func NewServerMetrics(counterOpts ...CounterOption) *ServerMetrics {
 	return &ServerMetrics{
 		serverStartedCounter: prom.NewCounterVec(
 			opts.apply(prom.CounterOpts{
-				Name: "grpc_server_started_total",
-				Help: "Total number of RPCs started on the server.",
+				Namespace: namespace,
+				Name:      "grpc_server_started_total",
+				Help:      "Total number of RPCs started on the server.",
 			}), []string{"grpc_type", "grpc_service", "grpc_method"}),
 		serverHandledCounter: prom.NewCounterVec(
 			opts.apply(prom.CounterOpts{
-				Name: "grpc_server_handled_total",
-				Help: "Total number of RPCs completed on the server, regardless of success or failure.",
+				Namespace: namespace,
+				Name:      "grpc_server_handled_total",
+				Help:      "Total number of RPCs completed on the server, regardless of success or failure.",
 			}), []string{"grpc_type", "grpc_service", "grpc_method", "grpc_code"}),
 		serverStreamMsgReceived: prom.NewCounterVec(
 			opts.apply(prom.CounterOpts{
-				Name: "grpc_server_msg_received_total",
-				Help: "Total number of RPC stream messages received on the server.",
+				Namespace: namespace,
+				Name:      "grpc_server_msg_received_total",
+				Help:      "Total number of RPC stream messages received on the server.",
 			}), []string{"grpc_type", "grpc_service", "grpc_method"}),
 		serverStreamMsgSent: prom.NewCounterVec(
 			opts.apply(prom.CounterOpts{
-				Name: "grpc_server_msg_sent_total",
-				Help: "Total number of gRPC stream messages sent by the server.",
+				Namespace: namespace,
+				Name:      "grpc_server_msg_sent_total",
+				Help:      "Total number of gRPC stream messages sent by the server.",
 			}), []string{"grpc_type", "grpc_service", "grpc_method"}),
 		serverHandledHistogramEnabled: false,
 		serverHandledHistogramOpts: prom.HistogramOpts{
-			Name:    "grpc_server_handling_seconds",
-			Help:    "Histogram of response latency (seconds) of gRPC that had been application-level handled by the server.",
-			Buckets: prom.DefBuckets,
+			Namespace: namespace,
+			Name:      "grpc_server_handling_seconds",
+			Help:      "Histogram of response latency (seconds) of gRPC that had been application-level handled by the server.",
+			Buckets:   prom.DefBuckets,
 		},
 		serverHandledHistogram: nil,
 	}
