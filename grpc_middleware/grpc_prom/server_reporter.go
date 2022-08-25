@@ -22,23 +22,43 @@ func newServerReporter(m *ServerMetrics, rpcType grpcType, fullMethod string) *s
 		metrics: m,
 		rpcType: rpcType,
 	}
+
+	r.serviceName, r.methodName = splitMethodName(fullMethod)
+	isOk := m.checkLabel(string(r.rpcType), m.config.excludeRegexRpcType) && m.checkLabel(r.serviceName, m.config.excludeRegexServiceName) && m.checkLabel(r.methodName, m.config.excludeRegexMethodName)
+	if !isOk {
+		return r
+	}
+
+	lvs := []string{string(r.rpcType), r.serviceName, r.methodName}
 	if r.metrics.serverHandledHistogramEnabled {
 		r.startTime = time.Now()
 	}
-	r.serviceName, r.methodName = splitMethodName(fullMethod)
-	r.metrics.serverStartedCounter.WithLabelValues(string(r.rpcType), r.serviceName, r.methodName).Inc()
+	r.metrics.serverStartedCounter.WithLabelValues(lvs...).Inc()
 	return r
 }
 
 func (r *serverReporter) ReceivedMessage() {
+	isOk := r.metrics.checkLabel(string(r.rpcType), r.metrics.config.excludeRegexRpcType) && r.metrics.checkLabel(r.serviceName, r.metrics.config.excludeRegexServiceName) && r.metrics.checkLabel(r.methodName, r.metrics.config.excludeRegexMethodName)
+	if !isOk {
+		return
+	}
+
 	r.metrics.serverStreamMsgReceived.WithLabelValues(string(r.rpcType), r.serviceName, r.methodName).Inc()
 }
 
 func (r *serverReporter) SentMessage() {
+	isOk := r.metrics.checkLabel(string(r.rpcType), r.metrics.config.excludeRegexRpcType) && r.metrics.checkLabel(r.serviceName, r.metrics.config.excludeRegexServiceName) && r.metrics.checkLabel(r.methodName, r.metrics.config.excludeRegexMethodName)
+	if !isOk {
+		return
+	}
 	r.metrics.serverStreamMsgSent.WithLabelValues(string(r.rpcType), r.serviceName, r.methodName).Inc()
 }
 
 func (r *serverReporter) Handled(code codes.Code) {
+	isOk := r.metrics.checkLabel(string(r.rpcType), r.metrics.config.excludeRegexRpcType) && r.metrics.checkLabel(r.serviceName, r.metrics.config.excludeRegexServiceName) && r.metrics.checkLabel(r.methodName, r.metrics.config.excludeRegexMethodName)
+	if !isOk {
+		return
+	}
 	r.metrics.serverHandledCounter.WithLabelValues(string(r.rpcType), r.serviceName, r.methodName, code.String()).Inc()
 	if r.metrics.serverHandledHistogramEnabled {
 		r.metrics.serverHandledHistogram.WithLabelValues(string(r.rpcType), r.serviceName, r.methodName).Observe(time.Since(r.startTime).Seconds())

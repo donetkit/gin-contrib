@@ -29,6 +29,8 @@ type ClientMetrics struct {
 	clientStreamSendHistogramEnabled bool
 	clientStreamSendHistogramOpts    prom.HistogramOpts
 	clientStreamSendHistogram        *prom.HistogramVec
+
+	config *config
 }
 
 // NewClientMetrics returns a ClientMetrics object. Use a new instance of

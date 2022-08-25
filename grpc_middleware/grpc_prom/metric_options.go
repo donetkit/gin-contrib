@@ -23,8 +23,7 @@ func WithConstLabels(labels prom.Labels) CounterOption {
 	}
 }
 
-// A HistogramOption lets you add options to Histogram metrics using With*
-// funcs.
+// A HistogramOption lets you add options to Histogram metrics using With* funcs.
 type HistogramOption func(*prom.HistogramOpts)
 
 // WithHistogramBuckets allows you to specify custom bucket ranges for histograms if EnableHandlingTimeHistogram is on.

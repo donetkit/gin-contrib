@@ -4,11 +4,19 @@ import (
 	"context"
 	"github.com/donetkit/contrib-gin/grpc_middleware/grpc_prom/grpcstatus"
 	prom "github.com/prometheus/client_golang/prometheus"
+	"regexp"
+	"time"
 
 	"google.golang.org/grpc"
 )
 
-const namespace = "service"
+var (
+	namespace = "service"
+
+	labels = []string{"grpc_type", "grpc_service", "grpc_method"}
+
+	labelsServeName = []string{"name"}
+)
 
 // ServerMetrics represents a collection of metrics to be registered on a
 // Prometheus metrics registry for a gRPC server.
@@ -20,6 +28,8 @@ type ServerMetrics struct {
 	serverHandledHistogramEnabled bool
 	serverHandledHistogramOpts    prom.HistogramOpts
 	serverHandledHistogram        *prom.HistogramVec
+	serverHandledUptime           *prom.CounterVec
+	config                        *config
 }
 
 // NewServerMetrics returns a ServerMetrics object. Use a new instance of
@@ -29,12 +39,18 @@ type ServerMetrics struct {
 func NewServerMetrics(counterOpts ...CounterOption) *ServerMetrics {
 	opts := counterOptions(counterOpts)
 	return &ServerMetrics{
+		serverHandledUptime: prom.NewCounterVec(
+			opts.apply(prom.CounterOpts{
+				Namespace: namespace,
+				Name:      "uptime",
+				Help:      "HTTP service uptime.",
+			}), labelsServeName),
 		serverStartedCounter: prom.NewCounterVec(
 			opts.apply(prom.CounterOpts{
 				Namespace: namespace,
 				Name:      "grpc_server_started_total",
 				Help:      "Total number of RPCs started on the server.",
-			}), []string{"grpc_type", "grpc_service", "grpc_method"}),
+			}), labels),
 		serverHandledCounter: prom.NewCounterVec(
 			opts.apply(prom.CounterOpts{
 				Namespace: namespace,
@@ -46,13 +62,13 @@ func NewServerMetrics(counterOpts ...CounterOption) *ServerMetrics {
 				Namespace: namespace,
 				Name:      "grpc_server_msg_received_total",
 				Help:      "Total number of RPC stream messages received on the server.",
-			}), []string{"grpc_type", "grpc_service", "grpc_method"}),
+			}), labels),
 		serverStreamMsgSent: prom.NewCounterVec(
 			opts.apply(prom.CounterOpts{
 				Namespace: namespace,
 				Name:      "grpc_server_msg_sent_total",
 				Help:      "Total number of gRPC stream messages sent by the server.",
-			}), []string{"grpc_type", "grpc_service", "grpc_method"}),
+			}), labels),
 		serverHandledHistogramEnabled: false,
 		serverHandledHistogramOpts: prom.HistogramOpts{
 			Namespace: namespace,
@@ -62,6 +78,34 @@ func NewServerMetrics(counterOpts ...CounterOption) *ServerMetrics {
 		},
 		serverHandledHistogram: nil,
 	}
+}
+
+// recordUptime increases service uptime per second.
+func (m *ServerMetrics) recordUptime() {
+	for range time.Tick(time.Second) {
+		m.serverHandledUptime.WithLabelValues(m.config.name).Inc()
+	}
+}
+
+// checkLabel returns the match result of labels.
+// Return true if regex-pattern compiles failed.
+func (m *ServerMetrics) checkLabel(label string, patterns []string) bool {
+	if len(patterns) <= 0 {
+		return true
+	}
+	for _, pattern := range patterns {
+		if pattern == "" {
+			return true
+		}
+		matched, err := regexp.MatchString(pattern, label)
+		if err != nil {
+			return true
+		}
+		if matched {
+			return false
+		}
+	}
+	return true
 }
 
 // EnableHandlingTimeHistogram enables histograms being registered when
@@ -75,7 +119,7 @@ func (m *ServerMetrics) EnableHandlingTimeHistogram(opts ...HistogramOption) {
 	if !m.serverHandledHistogramEnabled {
 		m.serverHandledHistogram = prom.NewHistogramVec(
 			m.serverHandledHistogramOpts,
-			[]string{"grpc_type", "grpc_service", "grpc_method"},
+			labels,
 		)
 	}
 	m.serverHandledHistogramEnabled = true
