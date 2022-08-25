@@ -3,6 +3,7 @@ package grpc_prom
 import (
 	"context"
 	"io"
+	"regexp"
 
 	prom "github.com/prometheus/client_golang/prometheus"
 	"google.golang.org/grpc"
@@ -86,6 +87,27 @@ func NewClientMetrics(counterOpts ...CounterOption) *ClientMetrics {
 		},
 		clientStreamSendHistogram: nil,
 	}
+}
+
+// checkLabel returns the match result of labels.
+// Return true if regex-pattern compiles failed.
+func (m *ClientMetrics) checkLabel(label string, patterns []string) bool {
+	if len(patterns) <= 0 {
+		return true
+	}
+	for _, pattern := range patterns {
+		if pattern == "" {
+			return true
+		}
+		matched, err := regexp.MatchString(pattern, label)
+		if err != nil {
+			return true
+		}
+		if matched {
+			return false
+		}
+	}
+	return true
 }
 
 // Describe sends the super-set of all possible descriptors of metrics

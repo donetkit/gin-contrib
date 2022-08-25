@@ -16,21 +16,14 @@ var (
 	// DefaultClientMetrics is the default instance of ClientMetrics. It is
 	// intended to be used in conjunction the default Prometheus metrics
 	// registry.
-	DefaultClientMetrics *ClientMetrics // = NewClientMetrics()
+	DefaultClientMetrics *ClientMetrics
 
 	// UnaryClientInterceptor is a gRPC client-side interceptor that provides Prometheus monitoring for Unary RPCs.
-	UnaryClientInterceptor func(ctx context.Context, method string, req interface{}, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error // = DefaultClientMetrics.UnaryClientInterceptor()
+	UnaryClientInterceptor func(ctx context.Context, method string, req interface{}, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error
 
 	// StreamClientInterceptor is a gRPC client-side interceptor that provides Prometheus monitoring for Streaming RPCs.
-	StreamClientInterceptor func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) // = DefaultClientMetrics.StreamClientInterceptor()
+	StreamClientInterceptor func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error)
 )
-
-//func init() {
-//	prom.MustRegister(DefaultClientMetrics.clientStartedCounter)
-//	prom.MustRegister(DefaultClientMetrics.clientHandledCounter)
-//	prom.MustRegister(DefaultClientMetrics.clientStreamMsgReceived)
-//	prom.MustRegister(DefaultClientMetrics.clientStreamMsgSent)
-//}
 
 // RegisterClient takes a gRPC server and pre-initializes all counters to 0. This
 // allows for easier monitoring in Prometheus (no missing metrics), and should
@@ -39,8 +32,8 @@ var (
 func RegisterClient(server *grpc.Server, opts ...Option) {
 	cfg := &config{
 		slowTime:   1,
-		namespace:  "service",
-		name:       "service",
+		namespace:  "client",
+		name:       "client",
 		duration:   []float64{0.1, 0.3, 1.2, 5},
 		handlerUrl: "/metrics",
 		endpointLabelMappingFn: func(c *gin.Context) string {

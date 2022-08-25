@@ -15,6 +15,7 @@ type config struct {
 	name                    string
 	duration                []float64
 	slowTime                float64
+	excludeRegexCode        []string
 	excludeRegexRpcType     []string
 	excludeRegexServiceName []string
 	excludeRegexMethodName  []string
@@ -65,6 +66,13 @@ func WithExcludeRegexRegexServiceName(excludeRegexServiceName []string) Option {
 func WithExcludeRegexMethodName(excludeRegexMethodName []string) Option {
 	return func(cfg *config) {
 		cfg.excludeRegexMethodName = excludeRegexMethodName
+	}
+}
+
+// WithExcludeRegexCode set excludeRegexCode function regexp
+func WithExcludeRegexCode(excludeRegexCode []string) Option {
+	return func(cfg *config) {
+		cfg.excludeRegexCode = excludeRegexCode
 	}
 }
 
