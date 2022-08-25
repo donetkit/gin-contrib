@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
+	"github.com/donetkit/contrib-gin/gorm_mysql"
 	"github.com/donetkit/contrib-log/glog"
-	"github.com/donetkit/contrib/db/gorm"
 	"github.com/donetkit/contrib/tracer"
 )
 
@@ -23,7 +23,7 @@ func main() {
 	}
 	var dns = map[string]string{}
 	dns["default"] = "root:test@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=True&loc=Local&timeout=1000ms"
-	sql := gorm.NewDb(gorm.WithDNS(dns), gorm.WithLogger(log), gorm.WithTracer(traceServer))
+	sql := gorm_mysql.NewDb(gorm_mysql.WithDNS(dns), gorm_mysql.WithLogger(log), gorm_mysql.WithTracer(traceServer))
 	defer func() {
 		tp.Shutdown(context.Background())
 	}()
