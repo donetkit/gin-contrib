@@ -1,7 +1,7 @@
 package grpc_prom
 
 import (
-	"github.com/donetkit/contrib-gin/middleware/prom/bitset"
+	"github.com/donetkit/contrib-gin/pkg/bitset"
 )
 
 const defaultSize = 2 << 24

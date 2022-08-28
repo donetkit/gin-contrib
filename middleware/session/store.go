@@ -77,7 +77,7 @@ func (s GobSerializer) Deserialize(d []byte, ss *sessions.Session) error {
 
 // CacheStore stores session in a redis backend.
 type CacheStore struct {
-	Cache         cache.IShortCache
+	Cache         cache.ICache
 	Codecs        []securecookie.Codec
 	Options       *sessions.Options // default configuration
 	DefaultMaxAge int               // default Redis TTL for a MaxAge == 0 session
@@ -131,7 +131,7 @@ func (s *CacheStore) SetMaxAge(v int) {
 }
 
 // NewCacheStore instantiates a CacheStore with a  cache passed in.
-func NewCacheStore(cache cache.IShortCache, keyPairs ...[]byte) *CacheStore {
+func NewCacheStore(cache cache.ICache, keyPairs ...[]byte) *CacheStore {
 	return &CacheStore{
 		Cache:  cache,
 		Codecs: securecookie.CodecsFromPairs(keyPairs...),
@@ -206,9 +206,7 @@ func (s *CacheStore) Save(r *http.Request, w http.ResponseWriter, session *sessi
 // WARNING: This method should be considered deprecated since it is not exposed via the gorilla/session interface.
 // Set session.Options.MaxAge = -1 and call Save instead. - July 18th, 2013
 func (s *CacheStore) Delete(r *http.Request, w http.ResponseWriter, session *sessions.Session) error {
-	if _, err := s.Cache.WithContext(r.Context()).Delete(s.keyPrefix + session.ID); err != nil {
-		return err
-	}
+	s.Cache.WithContext(r.Context()).Delete(s.keyPrefix + session.ID)
 	// Set cookie to expire.
 	options := *session.Options
 	options.MaxAge = -1
@@ -248,8 +246,6 @@ func (s *CacheStore) load(ctx context.Context, session *sessions.Session) (bool,
 
 // delete removes keys from redis if MaxAge<0
 func (s *CacheStore) delete(ctx context.Context, session *sessions.Session) error {
-	if _, err := s.Cache.WithContext(ctx).Delete(s.keyPrefix + session.ID); err != nil {
-		return err
-	}
+	s.Cache.WithContext(ctx).Delete(s.keyPrefix + session.ID)
 	return nil
 }

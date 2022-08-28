@@ -30,12 +30,12 @@ type cachedWriter struct {
 	gin.ResponseWriter
 	status  int
 	written bool
-	store   cache.IShortCache
+	store   cache.ICache
 	expire  time.Duration
 	key     string
 }
 
-func SiteCache(store cache.IShortCache, expire time.Duration) gin.HandlerFunc {
+func SiteCache(store cache.ICache, expire time.Duration) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		url := c.Request.URL
 		key := urlEscape(PageCachePrefix, url.RequestURI())
@@ -58,7 +58,7 @@ func SiteCache(store cache.IShortCache, expire time.Duration) gin.HandlerFunc {
 	}
 }
 
-func CachePage(store cache.IShortCache, expire time.Duration, handle gin.HandlerFunc) gin.HandlerFunc {
+func CachePage(store cache.ICache, expire time.Duration, handle gin.HandlerFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		url := c.Request.URL
 		key := urlEscape(PageCachePrefix, url.RequestURI())
@@ -81,7 +81,7 @@ func CachePage(store cache.IShortCache, expire time.Duration, handle gin.Handler
 	}
 }
 
-func NewPageCache(store cache.IShortCache, expire time.Duration, handle gin.HandlerFunc) gin.HandlerFunc {
+func NewPageCache(store cache.ICache, expire time.Duration, handle gin.HandlerFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		url := c.Request.URL
 		key := urlEscape(PageCachePrefix, url.RequestURI())
@@ -106,7 +106,7 @@ func NewPageCache(store cache.IShortCache, expire time.Duration, handle gin.Hand
 	}
 }
 
-func newCachedWriter(c *gin.Context, store cache.IShortCache, expire time.Duration, writer gin.ResponseWriter, key string) *cachedWriter {
+func newCachedWriter(c *gin.Context, store cache.ICache, expire time.Duration, writer gin.ResponseWriter, key string) *cachedWriter {
 	return &cachedWriter{c, writer, 0, false, store, expire, key}
 }
 

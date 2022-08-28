@@ -22,7 +22,7 @@ type ICacheStore interface {
 //
 // It is recommended to use an authentication key with 32 or 64 bytes. The encryption key,
 // if set, must be either 16, 24, or 32 bytes to select AES-128, AES-192, or AES-256 modes.
-func NewStore(cache cache.IShortCache, keyPairs ...[]byte) (ICacheStore, error) {
+func NewStore(cache cache.ICache, keyPairs ...[]byte) (ICacheStore, error) {
 	store := NewCacheStore(cache, keyPairs...)
 	return &cacheStore{store}, nil
 }

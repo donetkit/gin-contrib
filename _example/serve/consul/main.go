@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/donetkit/contrib/discovery"
-	"github.com/donetkit/contrib/discovery/consul"
+	"github.com/donetkit/contrib/pkg/discovery"
+	"github.com/donetkit/contrib/pkg/discovery/consul"
 	"github.com/donetkit/contrib/server/webserve"
 	"github.com/gin-gonic/gin"
 	"net/http"

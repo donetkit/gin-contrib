@@ -6,7 +6,7 @@ import (
 )
 
 type option struct {
-	cache  cache.IShortCache
+	cache  cache.ICache
 	logger glog.ILoggerEntry
 }
 
@@ -19,7 +19,7 @@ func WithLogger(logger glog.ILogger) Option {
 }
 
 // WithCache  cache
-func WithCache(cache cache.IShortCache) Option {
+func WithCache(cache cache.ICache) Option {
 	return func(o *option) {
 		o.cache = cache
 	}
