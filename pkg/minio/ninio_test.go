@@ -30,6 +30,4 @@ func TestName(t *testing.T) {
 
 	fmt.Println(client.StatObject(bucketName, objectName))
 
-	//fmt.Println(client.StatObject(bucketName, objectName))
-
 }
