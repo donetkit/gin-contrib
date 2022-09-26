@@ -6,7 +6,6 @@ import (
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/minio/minio-go/v7/pkg/encrypt"
 	"io"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -66,6 +65,7 @@ func (c *Client) PutObject(bucketName string, objectName string, reader io.Reade
 	opts := minioClient.PutObjectOptions{}
 	if userTags != nil {
 		opts.UserTags = userTags
+		opts.UserMetadata = userTags
 	}
 
 	if c.password != "" {
@@ -90,6 +90,7 @@ func (c *Client) FPutObject(bucketName string, objectName string, filePath strin
 	opts := minioClient.PutObjectOptions{}
 	if userTags != nil {
 		opts.UserTags = userTags
+		opts.UserMetadata = userTags
 	}
 
 	if c.password != "" {
@@ -123,7 +124,7 @@ func (c *Client) GetObjectByte(bucketName, objectName string) ([]byte, error) {
 		return nil, err
 	}
 
-	buf, err := ioutil.ReadAll(object)
+	buf, err := io.ReadAll(object)
 	if err != nil {
 		return nil, err
 	}
@@ -170,6 +171,7 @@ func (c *Client) StatObject(bucketName, objectName string) (*ObjectInfo, error) 
 		LastModified:   info.LastModified,
 		Size:           info.Size,
 		ContentType:    info.ContentType,
+		UserMetadata:   info.UserMetadata,
 		UserTags:       info.UserTags,
 		UserTagCount:   info.UserTagCount,
 		StorageClass:   info.StorageClass,

@@ -24,6 +24,9 @@ type ObjectInfo struct {
 	Size         int64     `json:"size"`         // Size in bytes of the object.
 	ContentType  string    `json:"contentType"`  // A standard MIME type describing the format of the object data.
 
+	// x-amz-meta-* headers stripped "x-amz-meta-" prefix containing the first value.
+	UserMetadata map[string]string `json:"userMetadata"`
+
 	// x-amz-tagging values in their k/v values.
 	UserTags map[string]string `json:"userTags"`
 
