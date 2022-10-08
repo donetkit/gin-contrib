@@ -17,8 +17,6 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f h1:lO4WD4F/rVNCu3HqELle0jiPLLBs70cWOduZpkS1E78=
 github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f/go.mod h1:cuUVRXasLTGF7a8hSLbxyZXjz+1KgoB3wDUb6vlszIc=
-github.com/donetkit/contrib v0.3.3 h1:wHx0jvHCXMSL3VY+qaDinQqKwNsMb/j7tsNcg6XZa+Y=
-github.com/donetkit/contrib v0.3.3/go.mod h1:K/x81AcZYbWljhQDvgmDEH6bOt0BZQGqKA0dTE31+vU=
 github.com/donetkit/contrib v0.4.1 h1:ZYZ94osuwx8VOCkoXbG5fUpREWiyKJvIh3tTjfbcP1k=
 github.com/donetkit/contrib v0.4.1/go.mod h1:iGcTr3ua7zoUerzmCh9ikis2xWQEO+6i0g4CcE05+xQ=
 github.com/donetkit/contrib-log v0.2.5 h1:u+JoBB3VpkVychSw52vImY1+79h/zNck6ZqOO7ZBwQA=
