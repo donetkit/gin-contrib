@@ -5,6 +5,7 @@ package grpc_glog
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"github.com/donetkit/contrib-gin/grpc_middleware"
 	"github.com/golang/protobuf/proto"
 	"google.golang.org/grpc/metadata"
@@ -78,14 +79,23 @@ func LogRequestIP(ctx context.Context) string {
 func LogRequest(log *LogParams, req interface{}, fullMethodString string) {
 	log.Service = path.Dir(fullMethodString)[1:]
 	log.Method = path.Base(fullMethodString)
+
 	if b := GetRawJSON(req); b != nil {
-		log.RequestData = string(b.Bytes())
+		if b.Len() <= 1024*1024 {
+			log.RequestData = string(b.Bytes())
+		} else {
+			log.RequestData = fmt.Sprintf("request data is too large, limit size: %d", 1024*1024)
+		}
 	}
 }
 
 func LogResponse(log *LogParams, resp interface{}) {
 	if b := GetRawJSON(resp); b != nil {
-		log.ResponseData = string(b.Bytes())
+		if b.Len() <= 1024*1024*2 {
+			log.ResponseData = string(b.Bytes())
+		} else {
+			log.ResponseData = fmt.Sprintf("response data is too large, limit size: %d", 1024*1024*2)
+		}
 	}
 }
 

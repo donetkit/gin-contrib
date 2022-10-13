@@ -229,8 +229,17 @@ func ErrorLoggerT(typ gin.ErrorType) gin.HandlerFunc {
 				writer := &bodyWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
 				c.Writer = writer
 
-				param.RequestData = string(rawData)
-				param.ResponseData = writer.body.String()
+				if len(rawData) <= 1024*1024 {
+					param.RequestData = string(rawData)
+				} else {
+					param.RequestData = fmt.Sprintf("request data is too large, limit size: %d", 1024*1024)
+				}
+
+				if writer.body.Len() <= 1024*1024*2 {
+					param.ResponseData = writer.body.String()
+				} else {
+					param.ResponseData = fmt.Sprintf("response data is too large, limit size: %d", 1024*1024*2)
+				}
 
 				cfg.logger.Debug(param.RequestData)
 				cfg.logger.Debug(param.ResponseData)
@@ -311,8 +320,17 @@ func New(opts ...Option) gin.HandlerFunc {
 		param.Latency = param.TimeStamp.Sub(start)
 		param.ErrorMessage = c.Errors.ByType(gin.ErrorTypePrivate).String()
 
-		param.RequestData = string(rawData)
-		param.ResponseData = writer.body.String()
+		if len(rawData) <= 1024*1024 {
+			param.RequestData = string(rawData)
+		} else {
+			param.RequestData = fmt.Sprintf("request data is too large, limit size: %d", 1024*1024)
+		}
+
+		if writer.body.Len() <= 1024*1024*2 {
+			param.ResponseData = writer.body.String()
+		} else {
+			param.ResponseData = fmt.Sprintf("response data is too large, limit size: %d", 1024*1024*2)
+		}
 
 		cfg.logger.Debug(param.RequestData)
 		cfg.logger.Debug(param.ResponseData)
