@@ -2,7 +2,7 @@ package limits
 
 import (
 	"bytes"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -14,7 +14,7 @@ func TestRequestSizeLimiterOK(t *testing.T) {
 	router := gin.New()
 	router.Use(RequestSizeLimiter(10))
 	router.POST("/test_ok", func(c *gin.Context) {
-		_, _ = ioutil.ReadAll(c.Request.Body)
+		_, _ = io.ReadAll(c.Request.Body)
 		if len(c.Errors) > 0 {
 			return
 		}
@@ -32,14 +32,14 @@ func TestRequestSizeLimiterOver(t *testing.T) {
 	router := gin.New()
 	router.Use(RequestSizeLimiter(10))
 	router.POST("/test_large", func(c *gin.Context) {
-		_, _ = ioutil.ReadAll(c.Request.Body)
+		_, _ = io.ReadAll(c.Request.Body)
 		if len(c.Errors) > 0 {
 			return
 		}
 		c.Request.Body.Close()
 		c.String(http.StatusOK, "OK")
 	})
-	resp := performRequest(http.MethodPost, "/test_large", "big=abcdefghijklmnop", router)
+	resp := performRequest(http.MethodPost, "/test_large", "big=abc", router)
 
 	if resp.Code != http.StatusRequestEntityTooLarge {
 		t.Fatalf("error posting - http status %v", resp.Code)

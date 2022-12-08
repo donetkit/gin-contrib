@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"regexp"
 	"runtime/debug"
@@ -41,11 +41,11 @@ type LogFormatter func(params LogFormatterParams) string
 
 // LogFormatterParams is the structure any formatter will be handed when time to log comes
 type LogFormatterParams struct {
-	// TimeStamp shows the time after the webserve returns a response.
+	// TimeStamp shows the time after the webServe returns a response.
 	TimeStamp time.Time
 	// StatusCode is HTTP response code.
 	StatusCode int
-	// Latency is how much time the webserve cost to process a certain request.
+	// Latency is how much time the webServe cost to process a certain request.
 	Latency time.Duration
 	// ClientIP equals Context's ClientIP method.
 	ClientIP string
@@ -147,12 +147,12 @@ var defaultLogFormatter = func(param LogFormatterParams) string {
 	)
 }
 
-// disableConsoleColor disables color output in the consoleserve.
+// disableConsoleColor disables color output in the console serve.
 func disableConsoleColor() {
 	consoleColorMode = disableColor
 }
 
-// forceConsoleColor force color output in the consoleserve.
+// forceConsoleColor force color output in the console serve.
 func forceConsoleColor() {
 	consoleColorMode = forceColor
 }
@@ -200,7 +200,7 @@ func ErrorLoggerT(typ gin.ErrorType) gin.HandlerFunc {
 				}
 				rawData, err := c.GetRawData()
 				if err == nil {
-					c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(rawData))
+					c.Request.Body = io.NopCloser(bytes.NewBuffer(rawData))
 				}
 				raw := c.Request.URL.RawQuery
 				param := LogFormatterParams{
@@ -244,7 +244,7 @@ func ErrorLoggerT(typ gin.ErrorType) gin.HandlerFunc {
 				cfg.logger.Debug(param.RequestData)
 				cfg.logger.Debug(param.ResponseData)
 
-				cfg.logger.Error(cfg.formatter(param))
+				cfg.logger.Infof("%s", cfg.formatter(param))
 
 				if cfg.writerErrorFn != nil {
 					code, msg := cfg.writerErrorFn(c, &param)
@@ -296,7 +296,7 @@ func New(opts ...Option) gin.HandlerFunc {
 		}
 		rawData, err := c.GetRawData()
 		if err == nil {
-			c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(rawData))
+			c.Request.Body = io.NopCloser(bytes.NewBuffer(rawData))
 		}
 		writer := &bodyWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
 		c.Writer = writer
@@ -335,7 +335,7 @@ func New(opts ...Option) gin.HandlerFunc {
 		cfg.logger.Debug(param.RequestData)
 		cfg.logger.Debug(param.ResponseData)
 
-		cfg.logger.Debug(cfg.formatter(param))
+		cfg.logger.Infof("%s", cfg.formatter(param))
 
 		if cfg.writerLogFn != nil {
 			param.RequestProto = c.Request.Proto
