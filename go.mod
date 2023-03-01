@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/appleboy/gofight/v2 v2.1.2
-	github.com/donetkit/contrib v0.4.1
+	github.com/donetkit/contrib v0.4.7
 	github.com/donetkit/contrib-log v0.2.5
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-playground/validator/v10 v10.11.0
