@@ -6,7 +6,6 @@ import (
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/minio/minio-go/v7/pkg/encrypt"
 	"io"
-	"net/http"
 )
 
 type Client struct {
@@ -146,18 +145,19 @@ func (c *Client) GetObject(bucketName, objectName string) (*minioClient.Object, 
 	return object, nil
 }
 
-// GetObjectRead Get Object read
-func (c *Client) GetObjectRead(bucketName, objectName string) (io.ReadCloser, *minioClient.ObjectInfo, *http.Header, error) {
-	opts := minioClient.GetObjectOptions{}
-
-	if c.password != "" {
-		opts.ServerSideEncryption = encrypt.DefaultPBKDF([]byte(c.password), []byte(bucketName+objectName))
-	}
-
-	readCloser, objectInfo, header, err := c.client.GetObjectRead(c.ctx, bucketName, objectName, opts)
-
-	return readCloser, &objectInfo, &header, err
-}
+//
+//// GetObjectRead Get Object read
+//func (c *Client) GetObjectRead(bucketName, objectName string) (io.ReadCloser, *minioClient.ObjectInfo, *http.Header, error) {
+//	opts := minioClient.GetObjectOptions{}
+//
+//	if c.password != "" {
+//		opts.ServerSideEncryption = encrypt.DefaultPBKDF([]byte(c.password), []byte(bucketName+objectName))
+//	}
+//
+//	readCloser, objectInfo, header, err := c.client.GetObjectRead(c.ctx, bucketName, objectName, opts)
+//
+//	return readCloser, &objectInfo, &header, err
+//}
 
 // StatObject Stat Object
 func (c *Client) StatObject(bucketName, objectName string) (*ObjectInfo, error) {
