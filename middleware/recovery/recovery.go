@@ -48,3 +48,18 @@ func New(logger glog.ILogger, stack ...bool) gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func NewRecovery(handlers ...func(any any)) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		defer func() {
+			if r := recover(); r != nil {
+				for _, f := range handlers {
+					f(r)
+				}
+				c.Abort()
+				return
+			}
+		}()
+		c.Next()
+	}
+}
